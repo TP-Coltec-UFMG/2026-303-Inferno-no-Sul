@@ -1,0 +1,148 @@
+[gd_scene format=3 uid="uid://bwrgddcmyif18"]
+
+[ext_resource type="Script" uid="uid://so3aig0a4j4o" path="res://scripts/ui/main_menu.gd" id="1_fe2o3"]
+[ext_resource type="PackedScene" uid="uid://hch5wpbp7srd" path="res://scenes/ui/options_menu.tscn" id="1_sl1te"]
+[ext_resource type="FontFile" uid="uid://cs7lo8vk0obdx" path="res://assets/Fonts/Nome do jogo/RubikWetPaint-Regular.ttf" id="2_1g8jr"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_fe2o3"]
+load_path = "res://.godot/imported/background_1.png-5c20cd916d50ee786fbb370f94110e2c.ctex"
+
+[node name="MainMenu" type="Control" unique_id=2088259132]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_fe2o3")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1346799564]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("CompressedTexture2D_fe2o3")
+expand_mode = 1
+stretch_mode = 6
+flip_h = true
+
+[node name="UILayer" type="MarginContainer" parent="." unique_id=1674628305]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 60
+theme_override_constants/margin_top = 60
+theme_override_constants/margin_right = 60
+theme_override_constants/margin_bottom = 60
+
+[node name="CenterControl" type="Control" parent="UILayer" unique_id=1156111950]
+layout_mode = 2
+
+[node name="ContentControl" type="Control" parent="UILayer/CenterControl" unique_id=1555671317]
+anchors_preset = 0
+offset_left = 760.0
+offset_top = 419.0
+offset_right = 1040.0
+offset_bottom = 541.0
+
+[node name="TitleLabel" type="Label" parent="UILayer/CenterControl/ContentControl" unique_id=884850370]
+layout_mode = 0
+offset_left = 474.0
+offset_top = -260.0
+offset_right = 1034.0
+offset_bottom = -107.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_1g8jr")
+theme_override_font_sizes/font_size = 77
+text = "Inferno no sul"
+
+[node name="Spacer" type="Control" parent="UILayer/CenterControl/ContentControl" unique_id=1213124948]
+custom_minimum_size = Vector2(0, 40)
+anchors_preset = 0
+offset_top = 35.0
+offset_right = 280.0
+offset_bottom = 75.0
+size_flags_vertical = 3
+
+[node name="ButtonsControl" type="Control" parent="UILayer/CenterControl/ContentControl" unique_id=912731053]
+custom_minimum_size = Vector2(280, 0)
+anchors_preset = 0
+offset_top = 87.0
+offset_right = 280.0
+offset_bottom = 87.0
+
+[node name="BtnNewGame" type="Button" parent="UILayer/CenterControl/ContentControl/ButtonsControl" unique_id=812397691]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 280.0
+offset_bottom = 31.0
+text = "Começar"
+
+[node name="BtnContinue" type="Button" parent="UILayer/CenterControl/ContentControl/ButtonsControl" unique_id=1930986770]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 39.0
+offset_right = 280.0
+offset_bottom = 70.0
+text = "Continuar Jogo"
+
+[node name="BtnOptions" type="Button" parent="UILayer/CenterControl/ContentControl/ButtonsControl" unique_id=290491241]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 78.0
+offset_right = 280.0
+offset_bottom = 109.0
+text = "Opções"
+
+[node name="BtnCredits" type="Button" parent="UILayer/CenterControl/ContentControl/ButtonsControl" unique_id=831950697]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 117.0
+offset_right = 280.0
+offset_bottom = 148.0
+text = "Créditos"
+
+[node name="BtnQuit" type="Button" parent="UILayer/CenterControl/ContentControl/ButtonsControl" unique_id=1922757213]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 156.0
+offset_right = 280.0
+offset_bottom = 187.0
+text = "Sair"
+
+[node name="VersionLabel" type="Label" parent="UILayer/CenterControl/ContentControl" unique_id=55538048]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 99.0
+offset_right = 280.0
+offset_bottom = 122.0
+text = "v0.1.0"
+
+[node name="SubMenuContainer" type="CanvasLayer" parent="." unique_id=289488176]
+unique_name_in_owner = true
+layer = 10
+visible = false
+
+[node name="OptionsMenuInstance" type="Control" parent="SubMenuContainer" unique_id=916132983]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="OptionsMenu" parent="SubMenuContainer/OptionsMenuInstance" unique_id=893574844 instance=ExtResource("1_sl1te")]
+layout_mode = 1
+offset_left = 1268.274
+offset_top = 347.7201
+offset_right = 1268.2739
+offset_bottom = 347.7201
+
+[node name="CreditsMenuInstance" type="Control" parent="SubMenuContainer" unique_id=1820176703]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0

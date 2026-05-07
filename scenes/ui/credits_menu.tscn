@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://ycvwv2owsqw2"]
+
+[ext_resource type="Texture2D" uid="uid://43y804tgm4ck" path="res://assets/ui/backgrounds/Background_creditos.png" id="1_c6vh4"]
+[ext_resource type="FontFile" uid="uid://sr7hwgne0xdf" path="res://assets/Fonts/Texto_P/JMH Typewriter.ttf" id="2_0hdyb"]
+[ext_resource type="FontFile" uid="uid://dm6jesumfync2" path="res://assets/Fonts/Texto_P/JMH Typewriter.otf" id="3_5uo15"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_eju1t"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_iy7ph"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rmmwq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xdcxj"]
+
+[node name="CreditsMenu" type="Control" unique_id=508897587]
+layout_direction = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackgroundCreditos" type="Sprite2D" parent="." unique_id=500188934]
+position = Vector2(995, 547)
+texture = ExtResource("1_c6vh4")
+
+[node name="Footer" type="HBoxContainer" parent="." unique_id=914412712]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.522
+anchor_top = 0.578
+anchor_right = 0.522
+anchor_bottom = 0.578
+offset_left = -74.24005
+offset_top = -10.23999
+offset_right = 74.75995
+offset_bottom = 10.76001
+size_flags_horizontal = 4
+size_flags_vertical = 4
+localize_numeral_system = false
+theme_override_constants/separation = 20
+
+[node name="BtnApply" type="Button" parent="Footer" unique_id=1386173623]
+unique_name_in_owner = true
+layout_direction = 4
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("2_0hdyb")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_eju1t")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_iy7ph")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_rmmwq")
+text = "Aplicar"
+
+[node name="BtnBack" type="Button" parent="Footer" unique_id=148494675]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("2_0hdyb")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_eju1t")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_iy7ph")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_rmmwq")
+text = "Voltar"
+
+[node name="TextEdit" type="TextEdit" parent="." unique_id=1338858542]
+layout_mode = 0
+offset_left = 855.0
+offset_top = 452.0
+offset_right = 1206.0
+offset_bottom = 608.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_constants/caret_width = 1
+theme_override_fonts/font = ExtResource("3_5uo15")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxEmpty_xdcxj")
+text = "Criadores
+Arthur Augusto Lara Matos
+Kauã Vitor de Souza Melo
+Lucas Oliveira Neiss
+Rafael Valdivio Siqueira Santos"
+autowrap_mode = 2

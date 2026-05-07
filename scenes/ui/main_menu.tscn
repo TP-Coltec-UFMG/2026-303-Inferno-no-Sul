@@ -3,9 +3,43 @@
 [ext_resource type="Script" uid="uid://so3aig0a4j4o" path="res://scripts/ui/main_menu.gd" id="1_fe2o3"]
 [ext_resource type="PackedScene" uid="uid://hch5wpbp7srd" path="res://scenes/ui/options_menu.tscn" id="1_sl1te"]
 [ext_resource type="FontFile" uid="uid://cs7lo8vk0obdx" path="res://assets/Fonts/Nome do jogo/RubikWetPaint-Regular.ttf" id="2_1g8jr"]
+[ext_resource type="Texture2D" uid="uid://c3qx1klswjvj8" path="res://assets/ui/backgrounds/Background_1.png" id="2_m1kxf"]
+[ext_resource type="FontFile" uid="uid://bnrc48r6igo37" path="res://assets/Fonts/Texto_P/JMH Typewriter-Bold.ttf" id="4_uhagc"]
+[ext_resource type="FontFile" uid="uid://dbu8s4fraswis" path="res://assets/Fonts/Texto_P/JMH Typewriter-Thin.otf" id="4_x2yvf"]
+[ext_resource type="FontFile" uid="uid://cadblgxr88u32" path="res://assets/Fonts/Texto_P/JMH Typewriter-Black.otf" id="6_btxxm"]
+[ext_resource type="PackedScene" uid="uid://ycvwv2owsqw2" path="res://scenes/ui/credits_menu.tscn" id="8_wb0q5"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_fe2o3"]
-load_path = "res://.godot/imported/background_1.png-5c20cd916d50ee786fbb370f94110e2c.ctex"
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x2yvf"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_uhagc"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_btxxm"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wb0q5"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q85j6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_8g5eo"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7suek"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_8ekit"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_n4uci"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_877pj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ayp64"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_y2j7i"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_y1h5l"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pw24t"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5dct7"]
 
 [node name="MainMenu" type="Control" unique_id=2088259132]
 layout_mode = 3
@@ -28,11 +62,17 @@ expand_mode = 1
 stretch_mode = 6
 flip_h = true
 
+[node name="Background" type="Sprite2D" parent="Background" unique_id=1999428927]
+position = Vector2(958.00006, 545)
+scale = Vector2(3.121556, 2.8806365)
+texture = ExtResource("2_m1kxf")
+
 [node name="UILayer" type="MarginContainer" parent="." unique_id=1674628305]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 60
@@ -52,14 +92,15 @@ offset_bottom = 541.0
 
 [node name="TitleLabel" type="Label" parent="UILayer/CenterControl/ContentControl" unique_id=884850370]
 layout_mode = 0
-offset_left = 474.0
-offset_top = -260.0
-offset_right = 1034.0
-offset_bottom = -107.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+offset_left = 295.0
+offset_top = -422.0
+offset_right = 1031.0
+offset_bottom = -303.0
+theme_override_colors/font_color = Color(0.25565878, 0.25565878, 0.25565878, 1)
 theme_override_fonts/font = ExtResource("2_1g8jr")
-theme_override_font_sizes/font_size = 77
-text = "Inferno no sul"
+theme_override_font_sizes/font_size = 100
+text = "Inferno no Sul"
+horizontal_alignment = 1
 
 [node name="Spacer" type="Control" parent="UILayer/CenterControl/ContentControl" unique_id=1213124948]
 custom_minimum_size = Vector2(0, 40)
@@ -79,48 +120,93 @@ offset_bottom = 87.0
 [node name="BtnNewGame" type="Button" parent="UILayer/CenterControl/ContentControl/ButtonsControl" unique_id=812397691]
 unique_name_in_owner = true
 layout_mode = 0
-offset_right = 280.0
-offset_bottom = 31.0
+offset_left = 671.0
+offset_top = -282.0
+offset_right = 839.0
+offset_bottom = -231.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.3217281, 0.32172796, 0.32172787, 1)
+theme_override_fonts/font = ExtResource("4_uhagc")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxEmpty_x2yvf")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_uhagc")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_btxxm")
 text = "Começar"
 
 [node name="BtnContinue" type="Button" parent="UILayer/CenterControl/ContentControl/ButtonsControl" unique_id=1930986770]
 unique_name_in_owner = true
 layout_mode = 0
-offset_top = 39.0
-offset_right = 280.0
-offset_bottom = 70.0
+offset_left = 671.0
+offset_top = -344.0
+offset_right = 991.0
+offset_bottom = -293.0
+theme_override_colors/font_color = Color(0.17641923, 0.17641905, 0.17641902, 1)
+theme_override_colors/font_hover_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_fonts/font = ExtResource("4_x2yvf")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxEmpty_wb0q5")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_q85j6")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_8g5eo")
 text = "Continuar Jogo"
 
 [node name="BtnOptions" type="Button" parent="UILayer/CenterControl/ContentControl/ButtonsControl" unique_id=290491241]
 unique_name_in_owner = true
 layout_mode = 0
-offset_top = 78.0
-offset_right = 280.0
-offset_bottom = 109.0
+offset_left = 674.0
+offset_top = -221.0
+offset_right = 809.0
+offset_bottom = -170.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("4_uhagc")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxEmpty_7suek")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_8ekit")
 text = "Opções"
 
 [node name="BtnCredits" type="Button" parent="UILayer/CenterControl/ContentControl/ButtonsControl" unique_id=831950697]
 unique_name_in_owner = true
 layout_mode = 0
-offset_top = 117.0
-offset_right = 280.0
-offset_bottom = 148.0
+offset_left = 675.0
+offset_top = -156.0
+offset_right = 852.0
+offset_bottom = -105.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("4_uhagc")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxEmpty_n4uci")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_877pj")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_ayp64")
 text = "Créditos"
 
 [node name="BtnQuit" type="Button" parent="UILayer/CenterControl/ContentControl/ButtonsControl" unique_id=1922757213]
 unique_name_in_owner = true
 layout_mode = 0
-offset_top = 156.0
-offset_right = 280.0
-offset_bottom = 187.0
+offset_left = 680.0
+offset_top = -90.0
+offset_right = 771.0
+offset_bottom = -39.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("4_uhagc")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxEmpty_y2j7i")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_y1h5l")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_pw24t")
 text = "Sair"
 
 [node name="VersionLabel" type="Label" parent="UILayer/CenterControl/ContentControl" unique_id=55538048]
 unique_name_in_owner = true
 layout_mode = 0
-offset_top = 99.0
-offset_right = 280.0
-offset_bottom = 122.0
+offset_left = -743.0
+offset_top = 509.0
+offset_right = -657.0
+offset_bottom = 548.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("6_btxxm")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxEmpty_5dct7")
 text = "v0.1.0"
 
 [node name="SubMenuContainer" type="CanvasLayer" parent="." unique_id=289488176]
@@ -140,6 +226,13 @@ offset_left = 1268.274
 offset_top = 347.7201
 offset_right = 1268.2739
 offset_bottom = 347.7201
+
+[node name="CreditsMenu" parent="SubMenuContainer/OptionsMenuInstance" unique_id=508897587 instance=ExtResource("8_wb0q5")]
+layout_mode = 1
+offset_left = 689.34283
+offset_top = 498.73178
+offset_right = 689.34283
+offset_bottom = 498.7318
 
 [node name="CreditsMenuInstance" type="Control" parent="SubMenuContainer" unique_id=1820176703]
 layout_mode = 3

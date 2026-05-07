@@ -3,7 +3,7 @@
 
 
 * [Sobre o Jogo](#sobreOJogo)
-* [Menu Principal](menuPrincipal)
+* [Menu Principal](#menuPrincipal)
 ## Sobre o jogo
 <a name="sobreOJogo"></a>
 No livro "A História da Loucura", o filósofo Michel Foucault expõe que, na sociedade atual, a caracterização do "louco" é normalmente atribuída àqueles que são vistos como indesejados para o convívio social, e não unicamente àqueles que apresentam algum transtorno passível de tratamento. Com isso, muitas das internações em instituições médicas têm como propósito afastar da comunidade os indivíduos percebidos como não aptos para interações humanas.

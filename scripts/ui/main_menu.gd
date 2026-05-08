@@ -14,7 +14,7 @@ extends Control
 # ─── Cenas dos Submenus ──────────────────────────────────────────────────────
 
 const SCENE_OPTIONS := preload("res://scenes/ui/options_menu.tscn")
-#const SCENE_CREDITS := preload("res://scenes/ui/credits_menu.tscn")
+const SCENE_CREDITS := preload("res://scenes/ui/credits_menu.tscn")
 
 const SCENE_GAME    := "res://scenes/game/dormitorios.tscn"
 
@@ -56,7 +56,7 @@ func _connect_buttons() -> void:
 	btn_new_game.pressed.connect(_on_new_game_pressed)
 	btn_continue.pressed.connect(_on_continue_pressed)
 	btn_options.pressed.connect(_on_options_pressed)
-#	btn_credits.pressed.connect(_on_credits_pressed)
+	btn_credits.pressed.connect(_on_credits_pressed)
 	btn_quit.pressed.connect(_on_quit_pressed)
 
 
@@ -77,8 +77,8 @@ func _on_options_pressed() -> void:
 	_open_submenu(SCENE_OPTIONS)
 
 
-#func _on_credits_pressed() -> void:
-#	_open_submenu(SCENE_CREDITS)
+func _on_credits_pressed() -> void:
+	_open_submenu(SCENE_CREDITS)
 
 
 func _on_quit_pressed() -> void:

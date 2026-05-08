@@ -20,6 +20,22 @@ A tela inicial apresenta uma versão em *pixel art* da fachada do Hospital Colô
   <img width="800" alt="Tela Inicial do Jogo" src="https://github.com/user-attachments/assets/820e623b-a616-4685-863e-66963b9562f8" />
 </p>
 
+## Acessibilidade
+<a name="Acessibilidade"></a>
+**Motora:** Controles simples e de fácil manejo; sensibilidade do controle variável.
+
+**Visual:** Múltiplas cores para informações importantes, tamanho de fonte variavel, formatação simples; som surround; indicação clara de que os elementos interativos são interativos.
+
+**Cognitiva:** Menu simples e intuitivo; linguagem simples e clara; sem movimentos repentinos ou inesperados.
+
+**Motora:** Controles simples; sem necessidade de reação rápida e complexa;
+
+**Auditiva:** Legenda disponível para todas as falas e informações relevantes; controle de volume.
+
+**Fala**: O input por voz não é necessário.
+
+
+
 ### Opções do Menu:
 1.  **Começar:** Inicia a narrativa.
 2.  **Opções:** Ajustes de som, vídeo e **acessibilidade**.

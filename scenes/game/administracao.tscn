@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://lp7fk57kc4qt"]
+
+[ext_resource type="PackedScene" path="res://scenes/game/porta_transicao.tscn" id="1_porta"]
+
+[node name="Administracao" type="Node2D"]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+
+[node name="PortaCozinha" parent="." instance=ExtResource("1_porta")]
+position = Vector2(64, 300)
+destino_path = "res://scenes/game/cozinha.tscn"
+spawn_pos = Vector2(760, 300)
+prompt_texto = "Ir para a Cozinha  [E]"
+
+[node name="PortaPatio" parent="." instance=ExtResource("1_porta")]
+position = Vector2(800, 300)
+destino_path = "res://scenes/game/patio.tscn"
+spawn_pos = Vector2(760, 500)
+prompt_texto = "Ir para o Pátio  [E]"

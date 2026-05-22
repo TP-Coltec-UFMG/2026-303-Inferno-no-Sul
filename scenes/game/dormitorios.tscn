@@ -1,5 +1,27 @@
-[gd_scene format=3 uid="uid://c6vsi84jn8dt8"]
+[gd_scene load_steps=4 format=3 uid="uid://c6vsi84jn8dt8"]
 
-[node name="Dormitorios" type="Node2D" unique_id=1313853561]
+[ext_resource type="PackedScene" uid="uid://bvvtesbmhf0bg" path="res://scenes/companheiros/doidinho.tscn" id="1_doidinho"]
+[ext_resource type="PackedScene" uid="uid://pjhkwrf7icwd" path="res://scenes/player/player.tscn" id="1_kdy6m"]
+[ext_resource type="PackedScene" path="res://scenes/game/porta_transicao.tscn" id="3_porta"]
+[ext_resource type="Script" uid="uid://be506xpgiw8p8" path="res://scripts/game/dormitorios.gd" id="4_dorm"]
 
-[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=597767577]
+[node name="Dormitorios" type="Node2D" unique_id=1190822216]
+script = ExtResource("4_dorm")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=249250893]
+
+[node name="Acompanhante" parent="." unique_id=705753088 instance=ExtResource("1_doidinho")]
+
+[node name="Player" parent="." unique_id=2436145 instance=ExtResource("1_kdy6m")]
+
+[node name="PortaPatio" parent="." unique_id=746633794 instance=ExtResource("3_porta")]
+position = Vector2(800, 300)
+destino_path = "res://scenes/game/patio.tscn"
+spawn_pos = Vector2(64, 300)
+prompt_texto = "Ir para o Pátio  [E]"
+
+[node name="PortaAlaPsiquiatrica" parent="." unique_id=2043047462 instance=ExtResource("3_porta")]
+position = Vector2(800, 500)
+destino_path = "res://scenes/game/ala_psiquiatrica.tscn"
+spawn_pos = Vector2(64, 300)
+prompt_texto = "Ir para a Ala Psiquiátrica  [E]"

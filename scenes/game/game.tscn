@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://t6qr7678k1ou"]
+
+[ext_resource type="Script" uid="uid://cu31uphwdj6y" path="res://scripts/game/game.gd" id="1_game"]
+[ext_resource type="PackedScene" path="res://scenes/lore/lore_viewer.tscn" id="2_lviewer"]
+[ext_resource type="PackedScene" path="res://scenes/ui/lore_inventario.tscn" id="3_linv"]
+
+[node name="Game" type="Node" unique_id=498838529]
+script = ExtResource("1_game")
+
+[node name="World" type="Node2D" parent="." unique_id=1350414739]
+
+[node name="LoreViewer" parent="." unique_id=856986693 instance=ExtResource("2_lviewer")]
+
+[node name="LoreInventario" parent="." unique_id=1971087059 instance=ExtResource("3_linv")]
+
+[node name="PauseContainer" type="CanvasLayer" parent="." unique_id=1921984558]
+layer = 10
+visible = false

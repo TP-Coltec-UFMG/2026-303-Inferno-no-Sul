@@ -1,0 +1,77 @@
+[gd_scene format=3 uid="uid://lore_inventario"]
+
+[ext_resource type="Script" path="res://scripts/ui/lore_inventario.gd" id="1_script"]
+
+[node name="LoreInventario" type="CanvasLayer"]
+layer = 11
+script = ExtResource("1_script")
+
+[node name="Painel" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.08, 0.08, 0.08, 0.95)
+visible = false
+
+[node name="BtnFechar" type="Button" parent="Painel"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -120.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 48.0
+text = "Fechar  [Esc]"
+
+[node name="TituloInventario" type="Label" parent="Painel"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 16.0
+offset_right = 200.0
+offset_bottom = 50.0
+text = "Documentos Encontrados"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Painel"]
+anchors_preset = 15
+anchor_right = 0.6
+anchor_bottom = 1.0
+offset_top = 60.0
+offset_bottom = 0.0
+
+[node name="Grade" type="GridContainer" parent="Painel/ScrollContainer"]
+size_flags_horizontal = 3
+columns = 4
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+
+[node name="Viewer" type="PanelContainer" parent="Painel"]
+anchors_preset = 13
+anchor_left = 0.6
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 60.0
+visible = false
+
+[node name="VBox" type="VBoxContainer" parent="Painel/Viewer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 12
+
+[node name="ImagemDetalhe" type="TextureRect" parent="Painel/Viewer/VBox"]
+custom_minimum_size = Vector2(0, 320)
+size_flags_vertical = 3
+expand_mode = 3
+stretch_mode = 6
+
+[node name="TituloDetalhe" type="Label" parent="Painel/Viewer/VBox"]
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 20
+
+[node name="DescricaoDetalhe" type="Label" parent="Painel/Viewer/VBox"]
+autowrap_mode = 3
+size_flags_vertical = 3

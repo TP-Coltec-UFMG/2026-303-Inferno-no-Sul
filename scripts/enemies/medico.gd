@@ -11,7 +11,7 @@ enum Estado { OCIOSO, PATRULHA, PROCURA, CACA, ENCONTRO }
 @export var taxa_esquecimento   : int   = 1
 
 @onready var agente_navegacao : NavigationAgent2D = $NavigationAgent2D
-@onready var animacao         : AnimationPlayer   = $AnimationPlayer
+@onready var animacao         : AnimatedSprite2D  = $AnimatedSprite2D
 @onready var raio_visao       : RayCast2D         = $VisionRay
 
 var estado            : Estado = Estado.OCIOSO
@@ -26,6 +26,7 @@ var temporizador_procura : float = 0.0
 const DURACAO_PROCURA : float = 12.0
 
 func _ready() -> void:
+	add_to_group("inimigos")
 	for wp in $WaypointMarkers.get_children():
 		pontos_rota.append(wp.global_position)
 	set_process(false)
@@ -144,6 +145,27 @@ func desativar_ia() -> void:
 	jogador = null
 	tempo_visto = 0
 	_mudar_estado(Estado.OCIOSO)
+
+## Chamado via call_group("inimigos", "ouvir_barulho", pos, raio).
+## raio == INF no sacrifício do companheiro; raio normal vem do nível de som do player.
+func ouvir_barulho(origem: Vector2, raio: float) -> void:
+	if estado == Estado.ENCONTRO:
+		return
+	var dist := global_position.distance_to(origem)
+	if dist > raio:
+		return
+
+	ultima_pos_jogador = origem
+
+	# Som mais intenso/próximo → suspeita maior
+	var fator_proximidade := 1.0 - clampf(dist / maxf(raio, 1.0), 0.0, 1.0)
+	var ganho_suspeita := int(lerp(10.0, float(limiar_caca), fator_proximidade))
+	tempo_visto = mini(tempo_visto + ganho_suspeita, limiar_caca + 60)
+
+	if tempo_visto >= limiar_caca:
+		_mudar_estado(Estado.CACA)
+	elif estado == Estado.PATRULHA or estado == Estado.OCIOSO:
+		_mudar_estado(Estado.PROCURA)
 
 func _distancia_ate_jogador() -> float:
 	if jogador == null:

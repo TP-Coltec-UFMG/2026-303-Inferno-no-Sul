@@ -16,7 +16,7 @@ extends Control
 const SCENE_OPTIONS := preload("res://scenes/ui/options_menu.tscn")
 const SCENE_CREDITS := preload("res://scenes/ui/credits_menu.tscn")
 
-const SCENE_GAME    := "res://scenes/game/dormitorios.tscn"
+const SCENE_GAME    := "res://scenes/game/game.tscn"
 
 # ─── Instâncias Ativas ───────────────────────────────────────────────────────
 

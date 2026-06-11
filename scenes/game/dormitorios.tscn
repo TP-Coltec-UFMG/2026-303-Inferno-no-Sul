@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://c6vsi84jn8dt8"]
+[gd_scene format=3 uid="uid://c6vsi84jn8dt8"]
 
 [ext_resource type="PackedScene" uid="uid://bvvtesbmhf0bg" path="res://scenes/companheiros/doidinho.tscn" id="1_doidinho"]
 [ext_resource type="PackedScene" uid="uid://pjhkwrf7icwd" path="res://scenes/player/player.tscn" id="1_kdy6m"]

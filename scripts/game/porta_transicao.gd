@@ -1,60 +1,41 @@
-extends Area2D
+extends Porta
 class_name PortaTransicao
 
-# ════════════════════════════════════════════════════════════════════════════
-#  PortaTransicao — Area2D colocado nas bordas de cada sala.
-#
-#  Configurar no editor:
-#    destino_path  → "res://scenes/game/patio.tscn"
-#    spawn_pos     → posição do player na sala destino
-#    prompt_texto  → texto do label filho "Prompt" (opcional)
-#
-#  O nó "Game" no root é buscado pelo nome — não depende de autoload.
-# ════════════════════════════════════════════════════════════════════════════
+# Porta que ao ser aberta troca de cena via nó "Game".
+# Configurar no editor:
+#   destino_path → "res://scenes/game/patio.tscn"
+#   spawn_pos    → posição do player na cena destino
+# Herda estado (TRANCADA/DESBLOQUEADA/ABERTA) e save de Porta.
 
-@export var destino_path : String  = ""
-@export var spawn_pos    : Vector2 = Vector2.ZERO
-@export var prompt_texto : String  = "Ir para próxima área"
-
-@onready var _prompt : Label = get_node_or_null("Prompt")
-
-var _player_dentro := false
+@export var destino_path: String = ""
+@export var spawn_pos: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
-	body_entered.connect(_ao_entrar)
-	body_exited.connect(_ao_sair)
+	super()
+	prompt_texto = "Ir para próxima área"
 	if _prompt:
-		_prompt.text    = prompt_texto
-		_prompt.visible = false
+		_prompt.text = prompt_texto
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if _player_dentro and event.is_action_pressed("interact"):
-		_transicionar()
-		get_viewport().set_input_as_handled()
-
-
-func _ao_entrar(body: Node2D) -> void:
-	if body is MC:
-		_player_dentro = true
-		if _prompt:
-			_prompt.visible = true
-
-
-func _ao_sair(body: Node2D) -> void:
-	if body is MC:
-		_player_dentro = false
-		if _prompt:
-			_prompt.visible = false
+func _ao_interagir() -> void:
+	match estado:
+		Estado.DESBLOQUEADA:
+			abrir()
+			_transicionar()
+		Estado.ABERTA:
+			_transicionar()
+		Estado.TRANCADA:
+			push_warning("PortaTransicao '%s' está trancada." % id)
 
 
 func _transicionar() -> void:
 	if destino_path.is_empty():
-		push_error("PortaTransicao: destino_path não configurado.")
+		push_error("PortaTransicao '%s': destino_path não configurado." % id)
 		return
 	var game := get_tree().root.get_node_or_null("Game")
 	if game == null:
 		push_error("PortaTransicao: nó 'Game' não encontrado no root.")
 		return
-	game.ir_para_fase(destino_path, spawn_pos)
+	# Save fica a cargo do Game (esta porta é liberada junto com a fase antiga).
+	game.ir_para_fase(destino_path, spawn_pos, true)

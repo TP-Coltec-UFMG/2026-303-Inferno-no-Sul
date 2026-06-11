@@ -10,12 +10,15 @@ extends Node
 #    LoreManager.coletado(id)          → bool
 #    LoreManager.todos()               → Array[DadosLore]
 #
-#  Integração com SaveManager:
-#    LoreManager.salvar()   → grava ids no SaveManager
-#    LoreManager.carregar() → restaura ids (texturas recarregadas por path)
+#  Integração com SaveManager: membro do grupo "lore_inventario" —
+#  get_save_data()/load_save_data() são chamados pelo pipeline de slots.
 # ════════════════════════════════════════════════════════════════════════════
 
 signal lore_coletado(dados: DadosLore)
+
+
+func _ready() -> void:
+	add_to_group("lore_inventario")
 
 # ─── Recurso de dados ────────────────────────────────────────────────────────
 
@@ -72,8 +75,8 @@ func todos() -> Array:
 #  PERSISTÊNCIA
 # ════════════════════════════════════════════════════════════════════════════
 
-## Serializa ids e paths coletados para o SaveManager.
-func salvar() -> void:
+## Serializa lore para inclusão no slot de save.
+func get_save_data() -> Array:
 	var lista: Array = []
 	for dados: DadosLore in _coletados.values():
 		lista.append({
@@ -82,24 +85,17 @@ func salvar() -> void:
 			"titulo"      : dados.titulo,
 			"descricao"   : dados.descricao,
 		})
-	var save_data := SaveManager.load_game()
-	save_data["lore"] = lista
-	SaveManager.save_game(save_data)
+	return lista
 
 
-## Restaura lore a partir do SaveManager, recarregando texturas por path.
-func carregar() -> void:
-	var save_data := SaveManager.load_game()
-	if not save_data.has("lore"):
-		return
-	for entry: Dictionary in save_data["lore"]:
-		var id           : String   = entry.get("id", "")
-		var path         : String   = entry.get("textura_path", "")
-		var titulo       : String   = entry.get("titulo", "")
-		var descricao    : String   = entry.get("descricao", "")
-		if id.is_empty() or path.is_empty():
-			continue
-		if _coletados.has(id):
+## Restaura lore a partir de dados carregados de um slot.
+func load_save_data(lista: Array) -> void:
+	for entry: Dictionary in lista:
+		var id        : String = entry.get("id", "")
+		var path      : String = entry.get("textura_path", "")
+		var titulo    : String = entry.get("titulo", "")
+		var descricao : String = entry.get("descricao", "")
+		if id.is_empty() or path.is_empty() or _coletados.has(id):
 			continue
 		var tex := load(path) as Texture2D
 		if tex == null:

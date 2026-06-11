@@ -69,7 +69,10 @@ func _coletar() -> void:
 
 	var dados := LoreManager.DadosLore.new(id, textura, textura_path, titulo, descricao)
 	LoreManager.coletar(dados)
-	LoreManager.salvar()
+	# Sai do grupo antes do save — queue_free só remove no fim do frame.
+	if is_in_group("salvavel"):
+		remove_from_group("salvavel")
+	SaveManager.salvar_atual(get_tree())
 
 	# Abre visualizador injetado no root
 	var viewer := get_tree().root.get_node_or_null("LoreViewer")

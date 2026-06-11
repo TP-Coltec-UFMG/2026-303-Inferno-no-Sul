@@ -33,7 +33,7 @@ func _ready() -> void:
 	_connect_buttons()
 
 	# Escuta mudanças de save em tempo real (ex: após criar um novo save).
-	SaveManager.save_state_changed.connect(_on_save_state_changed)
+	SaveManager.save_state_changed.connect(_on_save_slot_changed)
 
 
 # ─── Setup Inicial ───────────────────────────────────────────────────────────
@@ -65,11 +65,18 @@ func _connect_buttons() -> void:
 # ════════════════════════════════════════════════════════════════════════════
 
 func _on_new_game_pressed() -> void:
+	SaveManager.slot_ativo = SaveManager.primeiro_slot_vazio()
+	SaveManager.carregar_pendente = false
 	_transition_to_scene(SCENE_GAME)
 
 
 func _on_continue_pressed() -> void:
-	# O SaveManager carrega os dados; a cena do jogo os consome.
+	var slot := SaveManager.slot_mais_recente()
+	if slot == 0:
+		push_warning("MainMenu: 'Continuar' sem nenhum save.")
+		return
+	SaveManager.slot_ativo = slot
+	SaveManager.carregar_pendente = true
 	_transition_to_scene(SCENE_GAME)
 
 
@@ -87,9 +94,10 @@ func _on_quit_pressed() -> void:
 
 # ─── Callback do SaveManager ─────────────────────────────────────────────────
 
-func _on_save_state_changed(exists: bool) -> void:
-	btn_continue.visible   = exists
-	btn_continue.focus_mode = Control.FOCUS_ALL if exists else Control.FOCUS_NONE
+func _on_save_slot_changed(_slot: int, _exists: bool) -> void:
+	var any_save := SaveManager.has_save_file()
+	btn_continue.visible    = any_save
+	btn_continue.focus_mode = Control.FOCUS_ALL if any_save else Control.FOCUS_NONE
 
 
 # ════════════════════════════════════════════════════════════════════════════

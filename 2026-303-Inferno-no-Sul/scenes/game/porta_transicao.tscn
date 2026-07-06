@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://oxhr0u3vdh0o"]
+
+[ext_resource type="Script" uid="uid://civn86nuakfmh" path="res://scripts/game/porta_transicao.gd" id="1_porta"]
+
+[sub_resource type="RectangleShape2D" id="1_shape"]
+size = Vector2(32, 80)
+
+[node name="PortaTransicao" type="Area2D" unique_id=299578823]
+script = ExtResource("1_porta")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1743941545]
+shape = SubResource("1_shape")
+
+[node name="Prompt" type="Label" parent="." unique_id=732694780]
+visible = false
+offset_left = -60.0
+offset_top = -40.0
+offset_right = -60.0
+offset_bottom = -40.0
+text = "Ir para próxima área"

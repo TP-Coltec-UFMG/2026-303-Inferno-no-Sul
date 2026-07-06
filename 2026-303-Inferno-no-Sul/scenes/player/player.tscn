@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://pjhkwrf7icwd"]
+
+[ext_resource type="Script" uid="uid://bihkgnlj2d7pu" path="res://scripts/player/player.gd" id="1_8afob"]
+
+[sub_resource type="CapsuleShape2D" id="1_colshape"]
+height = 28.0
+
+[sub_resource type="SpriteFrames" id="2_frames"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"crouch",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"crouch_walk",
+"speed": 6.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"run",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk",
+"speed": 8.0
+}]
+
+[node name="Player" type="CharacterBody2D" unique_id=1474875751]
+script = ExtResource("1_8afob")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2134716804]
+shape = SubResource("1_colshape")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1983210920]
+sprite_frames = SubResource("2_frames")
+animation = &"idle"
+
+[node name="AudioFootsteps" type="AudioStreamPlayer2D" parent="." unique_id=1329175501]
+max_distance = 400.0
+
+[node name="AudioBreath" type="AudioStreamPlayer2D" parent="." unique_id=1428699838]
+max_distance = 200.0

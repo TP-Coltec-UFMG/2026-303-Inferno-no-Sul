@@ -1,0 +1,68 @@
+[gd_scene load_steps=7 format=3 uid="uid://ch1x1wc06jef4"]
+
+[ext_resource type="Script" uid="uid://dknn103w5a4qe" path="res://scripts/enemies/medico.gd" id="1_dfdy5"]
+
+[sub_resource type="CapsuleShape2D" id="1_colshape"]
+radius = 12.0
+height = 28.0
+
+[sub_resource type="SpriteFrames" id="2_frames"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk",
+"speed": 8.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"run",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"grab",
+"speed": 6.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"look_around",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="3_hearshape"]
+radius = 120.0
+
+[node name="Medico" type="CharacterBody2D"]
+script = ExtResource("1_dfdy5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("1_colshape")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("2_frames")
+animation = &"idle"
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 8.0
+target_desired_distance = 16.0
+
+[node name="VisionRay" type="RayCast2D" parent="."]
+enabled = true
+
+[node name="HearArea" type="Area2D" parent="."]
+
+[node name="HearShape" type="CollisionShape2D" parent="HearArea"]
+shape = SubResource("3_hearshape")
+
+[node name="WaypointMarkers" type="Node2D" parent="."]
+
+[node name="WP_1" type="Marker2D" parent="WaypointMarkers"]
+position = Vector2(-80, 0)
+
+[node name="WP_2" type="Marker2D" parent="WaypointMarkers"]
+position = Vector2(80, 0)

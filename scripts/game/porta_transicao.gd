@@ -1,11 +1,7 @@
 extends Porta
 class_name PortaTransicao
 
-# Porta que ao ser aberta troca de cena via nó "Game".
-# Configurar no editor:
-#   destino_path → "res://scenes/game/patio.tscn"
-#   spawn_pos    → posição do player na cena destino
-# Herda estado (TRANCADA/DESBLOQUEADA/ABERTA) e save de Porta.
+
 
 @export_file("*.tscn") var destino_path: String = "" # Mudado para abrir o seletor de arquivos no editor
 @export var spawn_pos: Vector2 = Vector2.ZERO
@@ -19,6 +15,8 @@ func _ready() -> void:
 
 
 func _ao_interagir() -> void:
+	print("PortaTransicao '%s': interagir chamado, estado=%s" % [id, estado])
+
 	match estado:
 		Estado.DESBLOQUEADA:
 			abrir()

@@ -5,10 +5,9 @@ enum Estado { TRANCADA, DESBLOQUEADA, ABERTA }
 
 @export var id: String = ""
 @export var prompt_texto: String = "Abrir"
-
+@export var estado: Estado = Estado.TRANCADA   
 @onready var _prompt: Label = get_node_or_null("Prompt")
 
-var estado: Estado = Estado.TRANCADA
 var _player_dentro: bool = false
 
 signal estado_alterado(novo: Estado)
@@ -25,8 +24,9 @@ func _ready() -> void:
 		_prompt.text = prompt_texto
 		_prompt.visible = false
 
-
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("interact"):
+		print("Porta '%s': recebi evento interact, _player_dentro=%s" % [id, _player_dentro])
 	if _player_dentro and event.is_action_pressed("interact"):
 		_ao_interagir()
 		get_viewport().set_input_as_handled()
@@ -34,6 +34,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## Chamado quando player interage. Subclasses podem sobrescrever.
 func _ao_interagir() -> void:
+	print("Porta '%s': interagir chamado, estado=%s" % [id, estado])
 	match estado:
 		Estado.DESBLOQUEADA:
 			abrir()
@@ -42,6 +43,8 @@ func _ao_interagir() -> void:
 
 
 func _ao_entrar(body: Node2D) -> void:
+	print("Porta '%s': body entrou -> %s (é MC? %s)" % [id, body.name, body is MC])
+	
 	if body is MC:
 		_player_dentro = true
 		if _prompt:
@@ -51,6 +54,7 @@ func _ao_entrar(body: Node2D) -> void:
 func _ao_sair(body: Node2D) -> void:
 	if body is MC:
 		_player_dentro = false
+		print("Porta '%s': body SAIU -> %s" % [id, body.name])
 		if _prompt:
 			_prompt.visible = false
 

@@ -1,0 +1,255 @@
+[gd_scene format=3 uid="uid://hch5wpbp7srd"]
+
+[ext_resource type="Script" uid="uid://vvstl4vscl0u" path="res://scripts/ui/options_menu.gd" id="1_63ow6"]
+[ext_resource type="Texture2D" uid="uid://dev5db0d6vtap" path="res://assets/ui/backgrounds/Background_options.png" id="2_imaij"]
+[ext_resource type="FontFile" uid="uid://dbu8s4fraswis" path="res://assets/Fonts/Texto_P/JMH Typewriter-Thin.otf" id="3_0ejsc"]
+[ext_resource type="FontFile" uid="uid://sr7hwgne0xdf" path="res://assets/Fonts/Texto_P/JMH Typewriter.ttf" id="3_c4822"]
+
+[sub_resource type="Animation" id="Animation_imaij"]
+resource_name = "MenuOpcoes"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_c4822"]
+_data = {
+&"MenuOpcoes": SubResource("Animation_imaij")
+}
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ovlcw"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gff41"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dqh3v"]
+
+[node name="OptionsMenu" type="Control" unique_id=1034167137]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 78.0
+offset_top = 82.0
+offset_right = 78.0
+offset_bottom = 82.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_63ow6")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=651140833]
+unique_name_in_owner = true
+libraries/ = SubResource("AnimationLibrary_c4822")
+
+[node name="Overlay" type="ColorRect" parent="." unique_id=1733942659]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 87.0
+offset_top = 80.0
+offset_right = 87.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Background" type="TextureRect" parent="." unique_id=1599562582]
+layout_mode = 0
+offset_left = 391.0
+offset_top = 127.0
+offset_right = 1322.0
+offset_bottom = 893.0
+texture = ExtResource("2_imaij")
+
+[node name="BtnClose" type="Button" parent="Background" unique_id=1701135556]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 30)
+clip_contents = true
+layout_mode = 0
+offset_left = 901.0
+offset_right = 931.0
+offset_bottom = 31.0
+layout_direction = 3
+text = "X"
+
+[node name="FontSize" type="Label" parent="Background" unique_id=279884844]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 327.0
+offset_right = 157.0
+offset_bottom = 368.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_0ejsc")
+theme_override_font_sizes/font_size = 32
+text = "Font size"
+
+[node name="SliderFontSize" type="HSlider" parent="Background" unique_id=1735394560]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 181.0
+offset_top = 325.0
+offset_right = 436.0
+offset_bottom = 369.0
+
+[node name="Resolution" type="Label" parent="Background" unique_id=1306908768]
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 0.287
+offset_left = 3.0
+offset_top = 385.0
+offset_right = 160.0
+offset_bottom = 213.158
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_0ejsc")
+theme_override_font_sizes/font_size = 32
+text = "Resolução"
+
+[node name="BtnResolution" type="OptionButton" parent="Background" unique_id=1780144123]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 192.0
+offset_top = 394.0
+offset_right = 342.0
+offset_bottom = 441.0
+
+[node name="Fullscreen" type="Label" parent="Background" unique_id=2092296530]
+layout_mode = 0
+offset_left = -1.0
+offset_top = 450.0
+offset_right = 168.0
+offset_bottom = 492.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_0ejsc")
+theme_override_font_sizes/font_size = 32
+text = "FullScreen"
+
+[node name="BtnFullscreen" type="CheckButton" parent="Background" unique_id=1822199499]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 192.0
+offset_top = 461.0
+offset_right = 236.0
+offset_bottom = 485.0
+
+[node name="Master" type="Label" parent="Background" unique_id=23237435]
+clip_contents = true
+layout_mode = 0
+offset_left = 2.0
+offset_top = 507.0
+offset_right = 159.0
+offset_bottom = 541.0
+layout_direction = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_0ejsc")
+theme_override_font_sizes/font_size = 32
+text = "Audio "
+
+[node name="SliderMaster" type="HSlider" parent="Background" unique_id=781643179]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 0
+offset_left = 111.0
+offset_top = 522.0
+offset_right = 350.0
+offset_bottom = 538.0
+layout_direction = 1
+
+[node name="Music" type="Label" parent="Background" unique_id=520465112]
+clip_contents = true
+layout_mode = 0
+offset_top = 561.0
+offset_right = 114.0
+offset_bottom = 602.0
+layout_direction = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_0ejsc")
+theme_override_font_sizes/font_size = 32
+text = "Musica"
+
+[node name="SliderMusic" type="HSlider" parent="Background" unique_id=444003954]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 0
+offset_left = 134.0
+offset_top = 578.0
+offset_right = 353.0
+offset_bottom = 594.0
+layout_direction = 1
+
+[node name="Sfx" type="Label" parent="Background" unique_id=1580404361]
+clip_contents = true
+layout_mode = 0
+offset_left = 4.0
+offset_top = 623.0
+offset_right = 262.0
+offset_bottom = 664.0
+layout_direction = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_0ejsc")
+theme_override_font_sizes/font_size = 32
+text = "Efeitos Sonoros"
+
+[node name="SliderSfx" type="HSlider" parent="Background" unique_id=1741609300]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 0
+offset_left = 278.0
+offset_top = 639.0
+offset_right = 426.0
+offset_bottom = 655.0
+layout_direction = 1
+
+[node name="MouseSensibility" type="Label" parent="Background" unique_id=1777829145]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 687.0
+offset_right = 193.0
+offset_bottom = 710.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_0ejsc")
+theme_override_font_sizes/font_size = 32
+text = "Sensibilidade do mouse"
+
+[node name="SliderMouseSensitivity" type="HSlider" parent="Background" unique_id=2119877122]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 417.0
+offset_top = 703.0
+offset_right = 640.0
+offset_bottom = 719.0
+
+[node name="ContainerBindings" type="Control" parent="Background" unique_id=810587364]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_left = -391.0
+offset_top = -80.0
+offset_right = -201.0
+offset_bottom = -80.0
+
+[node name="BtnApply" type="Button" parent="Background" unique_id=1227708412]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 339.0
+offset_top = 264.0
+offset_right = 405.0
+offset_bottom = 285.0
+layout_direction = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("3_c4822")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_ovlcw")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_gff41")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_dqh3v")
+text = "Aplicar"
+
+[node name="BtnBack" type="Button" parent="Background" unique_id=188552097]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 558.0
+offset_top = 265.0
+offset_right = 613.0
+offset_bottom = 286.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("3_c4822")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_ovlcw")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_gff41")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_dqh3v")
+text = "Voltar"

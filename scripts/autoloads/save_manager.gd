@@ -28,6 +28,9 @@ var slot_ativo: int = 1
 ## True quando o jogador escolheu "Continuar" — Game carrega o slot ao iniciar.
 var carregar_pendente: bool = false
 
+## Usado para salvar fatores como a execução de um evento unico
+var _flags: Dictionary = {}
+
 
 # ════════════════════════════════════════════════════════════════════════════
 #  API PÚBLICA
@@ -77,6 +80,7 @@ func dados_slot(slot: int) -> Dictionary:
 	if not _slot_valido(slot):
 		return {}
 	return _ler(slot)
+
 
 func tem_save(slot: int) -> bool:
 	return FileAccess.file_exists(_path(slot))
@@ -147,7 +151,7 @@ func _coletar_dados(tree: SceneTree) -> Dictionary:
 		"player":     {},
 		"companheiro":{},
 		"inventario": [],
-		"flags":      {},
+		"flags":      _flags.duplicate(),
 	}
 
 	for no in tree.get_nodes_in_group("salvavel"):
@@ -197,6 +201,7 @@ func _dados_companheiro(c: Node) -> Dictionary:
 # ════════════════════════════════════════════════════════════════════════════
 
 func _distribuir_dados(tree: SceneTree, data: Dictionary) -> void:
+	_flags = data.get("flags", {}).duplicate()
 	var objetos: Dictionary = data.get("objetos", {})
 	for no in tree.get_nodes_in_group("salvavel"):
 		if not no.has_method("load_save_data"):
@@ -255,7 +260,7 @@ func _escrever(slot: int, data: Dictionary) -> Error:
 	var file := FileAccess.open(_path(slot), FileAccess.WRITE)
 	if file == null:
 		push_error("SaveManager: falha ao escrever slot %d — %s" \
-				% [slot, error_string(FileAccess.get_open_error())])
+			% [slot, error_string(FileAccess.get_open_error())])
 		return FileAccess.get_open_error()
 	file.store_var(data)
 	file.close()
@@ -286,3 +291,14 @@ func _slot_valido(slot: int) -> bool:
 		push_error("SaveManager: slot %d inválido (1–%d)." % [slot, TOTAL_SLOTS])
 		return false
 	return true
+
+# ════════════════════════════════════════════════════════════════════════════
+#  FLAGS (booleanos simples de progresso: diálogos vistos, eventos únicos etc.)
+# ════════════════════════════════════════════════════════════════════════════
+
+func definir_flag(id: String, valor: bool = true) -> void:
+	_flags[id] = valor
+
+
+func obter_flag(id: String) -> bool:
+	return _flags.get(id, false)

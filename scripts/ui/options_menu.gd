@@ -4,7 +4,6 @@ signal menu_closed
 
 # ─── Referências de UI ───────────────────────────────────────────────────────
 
-@onready var tab_container: TabContainer = %TabContainer
 @onready var btn_apply: Button = %BtnApply
 @onready var btn_back:  Button = %BtnBack
 @onready var btn_close: Button = %BtnClose
@@ -17,9 +16,15 @@ signal menu_closed
 @onready var option_resolution: OptionButton = %BtnResolution
 
 @onready var slider_mouse_sensitivity: HSlider = %SliderMouseSensitivity
-@onready var container_bindings: VBoxContainer = %ContainerBindings
+@onready var container_bindings: Control = %ContainerBindings
 
 @onready var slider_font_size: HSlider = %SliderFontSize
+
+# ─── Configuração de fonte ───────────────────────────────────────────────────
+
+const DEFAULT_FONT_SIZE := 32
+const MIN_FONT_SIZE := 16
+const MAX_FONT_SIZE := 64
 
 # ─── Dados ───────────────────────────────────────────────────────────────────
 
@@ -49,6 +54,9 @@ func _ready() -> void:
 	_connect_signals()
 	set_process_unhandled_input(true)
 
+	# Aplica a fonte padrão em tudo antes de qualquer coisa ficar visível
+	_apply_font_size_to_all(DEFAULT_FONT_SIZE)
+
 	position.y = get_viewport_rect().size.y
 	var tween := create_tween().set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
 	tween.tween_property(self, "position:y", 0.0, 0.5)
@@ -73,21 +81,26 @@ func _build_rebind_list() -> void:
 	for child in container_bindings.get_children():
 		child.queue_free()
 
-	for action in REMAPPABLE_ACTIONS:
-		var row := HBoxContainer.new()
+	var y_offset := 0
+	var row_height := 40
 
+	for action in REMAPPABLE_ACTIONS:
 		var label := Label.new()
 		label.text = action.replace("_", " ").capitalize()
-		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_child(label)
+		label.position = Vector2(0, y_offset)
+		container_bindings.add_child(label)
 
 		var btn := Button.new()
 		btn.text = _get_action_key_label(action)
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.position = Vector2(200, y_offset)
 		btn.pressed.connect(_start_rebind.bind(action, btn))
-		row.add_child(btn)
+		container_bindings.add_child(btn)
 
-		container_bindings.add_child(row)
+		# Garante que os novos nós também recebam a fonte padrão
+		label.add_theme_font_size_override("font_size", DEFAULT_FONT_SIZE)
+		btn.add_theme_font_size_override("font_size", DEFAULT_FONT_SIZE)
+
+		y_offset += row_height
 
 
 func _get_action_key_label(action: String) -> String:
@@ -99,6 +112,30 @@ func _get_action_key_label(action: String) -> String:
 		if event is InputEventMouseButton:
 			return "Mouse %d" % event.button_index
 	return "---"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+#  FONTE — APLICAÇÃO GLOBAL (32px padrão, ajustável)
+# ════════════════════════════════════════════════════════════════════════════
+
+## Aplica um tamanho de fonte fixo recursivamente em todos os
+## Labels, Buttons, CheckButtons e OptionButtons abaixo de "node".
+func _apply_font_size_to_all(size: int, node: Node = self) -> void:
+	for child in node.get_children():
+		if child is Label or child is Button or child is CheckButton or child is OptionButton:
+			child.add_theme_font_size_override("font_size", size)
+		# Chama recursivamente para pegar nós aninhados (ex: ContainerBindings)
+		_apply_font_size_to_all(size, child)
+
+
+## Chamado quando o slider de acessibilidade muda — reaplica em tudo.
+func _on_font_size_changed(value: float) -> void:
+	var size := clampi(int(value), MIN_FONT_SIZE, MAX_FONT_SIZE)
+	_apply_font_size_to_all(size)
+
+	var root_theme := ThemeDB.get_project_theme()
+	if root_theme:
+		root_theme.default_font_size = size
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -119,7 +156,9 @@ func _load_settings() -> void:
 
 	slider_mouse_sensitivity.value = SettingsManager.get_setting("controls.mouse_sensitivity")
 
-	slider_font_size.value = SettingsManager.get_setting("accessibility.font_size")
+	# Se não houver valor salvo ainda, usa DEFAULT_FONT_SIZE
+	var saved_font_size = SettingsManager.get_setting("accessibility.font_size")
+	slider_font_size.value = saved_font_size if saved_font_size > 0 else DEFAULT_FONT_SIZE
 
 	_apply_all()
 
@@ -168,9 +207,7 @@ func _apply_video() -> void:
 
 
 func _apply_accessibility() -> void:
-	var root_theme := ThemeDB.get_project_theme()
-	if root_theme:
-		root_theme.default_font_size = int(slider_font_size.value)
+	_on_font_size_changed(slider_font_size.value)
 
 
 func _set_bus_volume(bus_name: String, db_value: float) -> void:
@@ -216,6 +253,7 @@ func _input(event: InputEvent) -> void:
 
 	InputManager.definir_evento(_rebinding_action, event)
 	_rebinding_button.text = _get_action_key_label(_rebinding_action)
+	_rebinding_button.add_theme_font_size_override("font_size", int(slider_font_size.value))
 	_rebinding_action = ""
 	_rebinding_button = null
 	set_process_input(false)
@@ -240,6 +278,7 @@ func _connect_signals() -> void:
 	btn_back.pressed.connect(_on_back_pressed)
 	btn_close.pressed.connect(_on_back_pressed)
 	check_fullscreen.toggled.connect(_on_fullscreen_toggled)
+	slider_font_size.value_changed.connect(_on_font_size_changed)
 
 
 func _on_apply_pressed() -> void:

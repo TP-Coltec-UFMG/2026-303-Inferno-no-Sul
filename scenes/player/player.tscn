@@ -8,27 +8,27 @@ height = 28.0
 [sub_resource type="SpriteFrames" id="2_frames"]
 animations = [{
 "frames": [],
-"loop": true,
+"loop": 1,
 "name": &"crouch",
 "speed": 5.0
 }, {
 "frames": [],
-"loop": true,
+"loop": 1,
 "name": &"crouch_walk",
 "speed": 6.0
 }, {
 "frames": [],
-"loop": true,
+"loop": 1,
 "name": &"idle",
 "speed": 5.0
 }, {
 "frames": [],
-"loop": true,
+"loop": 1,
 "name": &"run",
 "speed": 12.0
 }, {
 "frames": [],
-"loop": true,
+"loop": 1,
 "name": &"walk",
 "speed": 8.0
 }]

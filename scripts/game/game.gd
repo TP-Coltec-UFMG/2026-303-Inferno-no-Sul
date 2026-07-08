@@ -3,10 +3,6 @@ extends Node
 # ════════════════════════════════════════════════════════════════════════════
 #  Game — controlador de sessão + cache de fases
 #
-#  Todas as fases (chaves de ADJACENCIA) são pré-carregadas em background
-#  no _ready; a fase de entrada (inicial ou do save) tem prioridade.
-#  Cache permanente durante a sessão — sem eviction (5 fases 2D, footprint baixo).
-#
 #  API pública:
 #    Game.ir_para_fase("res://scenes/game/patio.tscn")
 #    Game.ir_para_fase("res://scenes/game/patio.tscn", Vector2(300, 200))
@@ -16,27 +12,13 @@ const FASE_INICIAL := "res://scenes/game/dormitorios.tscn"
 const FASE_PATIO   := "res://scenes/game/patio.tscn"
 const CENA_MENU    := "res://scenes/ui/main_menu.tscn"
 
-const ADJACENCIA: Dictionary = {
-	"res://scenes/game/dormitorios.tscn"    : [
-		"res://scenes/game/patio.tscn",
-		"res://scenes/game/ala_psiquiatrica.tscn",
-	],
-	"res://scenes/game/patio.tscn"          : [
-		"res://scenes/game/dormitorios.tscn",
-		"res://scenes/game/cozinha.tscn",
-	],
-	"res://scenes/game/cozinha.tscn"        : [
-		"res://scenes/game/patio.tscn",
-		"res://scenes/game/administracao.tscn",
-	],
-	"res://scenes/game/ala_psiquiatrica.tscn": [
-		"res://scenes/game/dormitorios.tscn",
-	],
-	"res://scenes/game/administracao.tscn"  : [
-		"res://scenes/game/cozinha.tscn",
-		"res://scenes/game/patio.tscn",
-	],
-}
+const FASES: Array[String] = [
+	"res://scenes/game/dormitorios.tscn",
+	"res://scenes/game/patio.tscn",
+	"res://scenes/game/cozinha.tscn",
+	"res://scenes/game/ala_psiquiatrica.tscn",
+	"res://scenes/game/administracao.tscn",
+]
 
 const SCENE_PAUSE   := preload("res://scenes/ui/pause_menu.tscn")
 const SCENE_OPTIONS := preload("res://scenes/ui/options_menu.tscn")
@@ -46,14 +28,17 @@ const SCENE_OPTIONS := preload("res://scenes/ui/options_menu.tscn")
 @onready var lore_inventario   : CanvasLayer = $LoreInventario
 @onready var pause_container   : CanvasLayer = $PauseContainer
 
-var _path_atual  : String = ""
-var _fase_atual  : Node   = null
-var _cache       : Dictionary = {}
-var _carregando  : Dictionary = {}
+var _path_atual  : String     = ""
+var _fase_atual  : Node       = null
+var _fases       : Dictionary = {}   # path -> Node já instanciado (vive na árvore a sessão toda)
+var _carregando  : Dictionary = {}   # path -> bool (ainda em ResourceLoader threaded)
 
 var _pause_menu  : Control = null
 var _opcoes_menu : Control = null
 var _pausado     : bool    = false
+
+# Progresso reportado no console (evita spam: só loga quando o % sobe)
+var _ultimo_progresso : Dictionary = {}   # path -> int (último % logado)
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -61,25 +46,29 @@ var _pausado     : bool    = false
 # ════════════════════════════════════════════════════════════════════════════
 
 func _ready() -> void:
+	pause_container.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	# Ignoramos completamente qualquer save pendente
 	SaveManager.carregar_pendente = false
-	
+
 	# Forçamos a fase inicial como os dormitórios
 	var fase := FASE_INICIAL
-	
-	# Inicia o pedido de cache em segundo plano
-	_precachear_fases(fase)
-	
-	# Aguarda a função de transição terminar de estruturar os nós com segurança
-	await ir_para_fase(fase)
+
+	# A fase de entrada precisa existir já no primeiro frame: ir_para_fase
+	# vai instanciá-la e ativá-la de forma síncrona (_fases e _carregando
+	# ainda estão vazios nesse ponto, então cai direto no load síncrono).
+	ir_para_fase(fase)
+
+	# As demais fases são carregadas E instanciadas em segundo plano,
+	# ocultas/desativadas, prontas pra quando o jogador chegar até elas.
+	print("Game: jogador liberado em '%s' — carregando as demais fases em segundo plano..." % fase)
+	_precachear_fases()
 
 
-## Dispara carregamento async de todas as fases; `prioritaria` é pedida primeiro.
-func _precachear_fases(prioritaria: String) -> void:
-	if prioritaria != "" and not _cache.has(prioritaria):
-		_iniciar_carregamento_async(prioritaria)
-	for path in ADJACENCIA.keys():
-		if not _cache.has(path) and not _carregando.has(path):
+## Dispara carregamento (e instanciação, ao terminar) de todas as fases
+## que ainda não existem na árvore nem estão sendo carregadas.
+func _precachear_fases() -> void:
+	for path in FASES:
+		if not _fases.has(path) and not _carregando.has(path):
 			_iniciar_carregamento_async(path)
 
 
@@ -89,6 +78,7 @@ func _process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
+		print("Game: pause pressionado, _pausado=", _pausado)
 		if _pausado:
 			_fechar_pause()
 		else:
@@ -172,30 +162,31 @@ func _sair_para_menu() -> void:
 #  API PÚBLICA
 # ════════════════════════════════════════════════════════════════════════════
 
+## Transiciona para `path`. A fase de destino já existe na árvore
+## (pré-instanciada); a troca é só esconder a atual e mostrar a nova —
+## sem instantiate()/queue_free() a cada transição.
 func ir_para_fase(path: String, spawn_pos: Vector2 = Vector2.ZERO, salvar_apos: bool = false) -> void:
 	if path == _path_atual:
 		return
 
 	_sincronizar_npcs()
 
-	if _fase_atual != null:
-		_fase_atual.queue_free()
-		_fase_atual = null
-		await get_tree().process_frame
-
-	var packed := _obter_packed(path)
-	if packed == null:
+	var nova_fase := _obter_instancia(path)
+	if nova_fase == null:
 		push_error("Game: falha ao carregar '%s'." % path)
 		return
 
-	_path_atual = path
-	_fase_atual = packed.instantiate()
-	world.add_child(_fase_atual)
-
 	if spawn_pos != Vector2.ZERO:
-		var player := _fase_atual.get_node_or_null("Player") as Node2D
+		var player := nova_fase.get_node_or_null("Player") as Node2D
 		if player:
 			player.global_position = spawn_pos
+
+	if _fase_atual != null:
+		_definir_ativa(_fase_atual, false)
+
+	_path_atual = path
+	_fase_atual = nova_fase
+	_definir_ativa(_fase_atual, true)
 
 	# Atualiza botão salvar se pause estiver aberto
 	if is_instance_valid(_pause_menu):
@@ -206,47 +197,100 @@ func ir_para_fase(path: String, spawn_pos: Vector2 = Vector2.ZERO, salvar_apos: 
 
 
 # ════════════════════════════════════════════════════════════════════════════
-#  CACHE E STREAMING
+#  CACHE E STREAMING (agora de instâncias vivas, não só de PackedScene)
 # ════════════════════════════════════════════════════════════════════════════
 
-func _obter_packed(path: String) -> PackedScene:
-	if _cache.has(path):
-		return _cache[path]
+## Retorna a instância viva de `path` (já filha de world, oculta ou visível),
+## instanciando na hora (síncrono) se o pré-carregamento em segundo plano
+## ainda não tiver terminado.
+func _obter_instancia(path: String) -> Node:
+	if _fases.has(path):
+		return _fases[path]
+
 	var packed: PackedScene = null
 	if _carregando.has(path):
 		_carregando.erase(path)
+		_ultimo_progresso.erase(path)
 		if ResourceLoader.load_threaded_get_status(path) == ResourceLoader.THREAD_LOAD_LOADED:
 			packed = ResourceLoader.load_threaded_get(path) as PackedScene
 		else:
 			# Async falhou ou ainda em andamento — fallback síncrono.
+			print("Game: '%s' foi requisitada antes de terminar o carregamento async — forçando load síncrono." % path)
 			packed = load(path) as PackedScene
 	else:
 		packed = load(path) as PackedScene
-	if packed:
-		_cache[path] = packed
-	return packed
+
+	if packed == null:
+		return null
+
+	return _registrar_instancia(path, packed)
+
+
+## Instancia `packed`, adiciona como filha (oculta/desativada) de `world`
+## e registra em _fases. Dali em diante a fase existe pra sempre na árvore.
+func _registrar_instancia(path: String, packed: PackedScene) -> Node:
+	var instancia := packed.instantiate()
+	world.add_child(instancia)
+	_definir_ativa(instancia, false)
+	_fases[path] = instancia
+	print("Game: [100%%] '%s' carregada e pronta em segundo plano." % path)
+	return instancia
 
 
 func _iniciar_carregamento_async(path: String) -> void:
 	var err := ResourceLoader.load_threaded_request(path)
 	if err == OK:
 		_carregando[path] = true
+		_ultimo_progresso[path] = -1
+		print("Game: [  0%%] iniciando carregamento em segundo plano de '%s'..." % path)
 	else:
 		push_warning("Game: não foi possível iniciar carregamento async de '%s'." % path)
 
 
 func _verificar_carregamentos() -> void:
 	for path in _carregando.keys():
-		var status := ResourceLoader.load_threaded_get_status(path)
+		var progresso_arr : Array = []
+		var status := ResourceLoader.load_threaded_get_status(path, progresso_arr)
+
 		match status:
+			ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+				if not progresso_arr.is_empty():
+					var pct := int(round(float(progresso_arr[0]) * 100.0))
+					var ultimo : int = _ultimo_progresso.get(path, -1)
+					# Só loga a cada 10% pra não spammar o console
+					if pct >= ultimo + 10:
+						_ultimo_progresso[path] = pct
+						print("Game: [%3d%%] carregando '%s' em segundo plano..." % [pct, path])
+
 			ResourceLoader.THREAD_LOAD_LOADED:
 				var packed := ResourceLoader.load_threaded_get(path) as PackedScene
 				if packed:
-					_cache[path] = packed
+					_registrar_instancia(path, packed)
 				_carregando.erase(path)
+				_ultimo_progresso.erase(path)
+
 			ResourceLoader.THREAD_LOAD_FAILED:
 				push_error("Game: carregamento async falhou para '%s'." % path)
 				_carregando.erase(path)
+				_ultimo_progresso.erase(path)
+
+
+## Liga/desliga uma fase inteira (visibilidade + processamento) sem nunca
+## removê-la da árvore — por isso o estado interno de cada fase sobrevive
+## entre visitas.
+func _definir_ativa(fase: Node, ativa: bool) -> void:
+	var item := fase as CanvasItem
+	if item:
+		item.visible = ativa
+	fase.process_mode = Node.PROCESS_MODE_INHERIT if ativa else Node.PROCESS_MODE_DISABLED
+
+	# Hooks opcionais: como _ready() de cada fase só roda uma vez (na
+	# primeira instanciação), o script da fase pode implementar estes
+	# métodos pra rodar lógica a cada entrada/saída. Ignore se não precisar.
+	if ativa and fase.has_method("ao_entrar_na_fase"):
+		fase.ao_entrar_na_fase()
+	elif not ativa and fase.has_method("ao_sair_da_fase"):
+		fase.ao_sair_da_fase()
 
 
 # ════════════════════════════════════════════════════════════════════════════

@@ -1,59 +1,21 @@
-[gd_scene load_steps=5 format=3 uid="uid://bvvtesbmhf0bg"]
+[gd_scene format=3 uid="uid://bvvtesbmhf0bg"]
 
-[ext_resource type="Script" path="res://scripts/npc/doidinho.gd" id="1_doidinho"]
+[ext_resource type="Script" uid="uid://b8a2hblcjk7x0" path="res://scripts/npc/doidinho.gd" id="1_doidinho"]
+[ext_resource type="Texture2D" uid="uid://bf4gtuu4cm5bs" path="res://assets/sheets/costas.png" id="2_r6sds"]
 
-[sub_resource type="CapsuleShape2D" id="1_shape"]
-radius = 10.0
-height = 26.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ssggg"]
+size = Vector2(92, 92)
 
-[sub_resource type="SpriteFrames" id="2_frames"]
-animations = [{
-"frames": [],
-"loop": true,
-"name": &"idle",
-"speed": 5.0
-}, {
-"frames": [],
-"loop": true,
-"name": &"walk",
-"speed": 8.0
-}, {
-"frames": [],
-"loop": false,
-"name": &"throw",
-"speed": 8.0
-}, {
-"frames": [],
-"loop": false,
-"name": &"interact",
-"speed": 6.0
-}, {
-"frames": [],
-"loop": false,
-"name": &"yell",
-"speed": 6.0
-}, {
-"frames": [],
-"loop": false,
-"name": &"sacrifice",
-"speed": 6.0
-}, {
-"frames": [],
-"loop": false,
-"name": &"death",
-"speed": 5.0
-}]
-
-[node name="Doidinho" type="CharacterBody2D"]
+[node name="Doidinho" type="CharacterBody2D" unique_id=1385343360]
 script = ExtResource("1_doidinho")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("1_shape")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1885372851]
+position = Vector2(-1, 0)
+shape = SubResource("RectangleShape2D_ssggg")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-sprite_frames = SubResource("2_frames")
-animation = &"idle"
-
-[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1644595326]
 path_desired_distance = 8.0
 target_desired_distance = 16.0
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=67254273]
+texture = ExtResource("2_r6sds")

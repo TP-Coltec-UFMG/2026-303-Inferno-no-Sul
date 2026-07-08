@@ -165,7 +165,7 @@ func _sair_para_menu() -> void:
 ## Transiciona para `path`. A fase de destino já existe na árvore
 ## (pré-instanciada); a troca é só esconder a atual e mostrar a nova —
 ## sem instantiate()/queue_free() a cada transição.
-func ir_para_fase(path: String, spawn_pos: Vector2 = Vector2.ZERO, salvar_apos: bool = false) -> void:
+func ir_para_fase(path: String, spawn_id: String = "", salvar_apos: bool = false) -> void:
 	if path == _path_atual:
 		return
 
@@ -176,10 +176,14 @@ func ir_para_fase(path: String, spawn_pos: Vector2 = Vector2.ZERO, salvar_apos: 
 		push_error("Game: falha ao carregar '%s'." % path)
 		return
 
-	if spawn_pos != Vector2.ZERO:
-		var player := nova_fase.get_node_or_null("Player") as Node2D
-		if player:
-			player.global_position = spawn_pos
+	if not spawn_id.is_empty():
+		var posicao: Vector2 = _achar_posicao_spawn(nova_fase, spawn_id)
+		if posicao != Vector2.INF:
+			var player := nova_fase.get_node_or_null("Player") as Node2D
+			if player:
+				player.global_position = posicao
+		else:
+			push_error("Game: nenhum PontoSpawn com id '%s' encontrado em '%s'." % [spawn_id, path])
 
 	if _fase_atual != null:
 		_definir_ativa(_fase_atual, false)
@@ -195,6 +199,23 @@ func ir_para_fase(path: String, spawn_pos: Vector2 = Vector2.ZERO, salvar_apos: 
 	if salvar_apos:
 		SaveManager.salvar_atual(get_tree())
 
+## Procura, dentro de `fase`, um PontoSpawn (Marker2D) com o spawn_id dado.
+## Como cada fase fica desativada (PROCESS_MODE_DISABLED) quando não está
+## ativa, get_tree().get_nodes_in_group() ainda funciona normalmente pra
+func _achar_posicao_spawn(fase: Node, spawn_id: String) -> Vector2:
+	print("Game: buscando spawn_id='%s' em fase='%s' (scene_file_path=%s)" % [spawn_id, fase.name, fase.scene_file_path])
+
+	var candidatos := fase.find_children("*", "Marker2D", true, false)
+	print("Game: %d Marker2D encontrados" % candidatos.size())
+
+	for no: Node in candidatos:
+		var tem_campo := "spawn_id" in no
+		var valor : String = no.spawn_id if tem_campo else "N/A"
+		print("  - node='%s' path='%s' tem_spawn_id=%s valor='%s'" % [no.name, no.get_path(), tem_campo, valor])
+		if tem_campo and no.spawn_id == spawn_id:
+			return no.global_position
+
+	return Vector2.INF
 
 # ════════════════════════════════════════════════════════════════════════════
 #  CACHE E STREAMING (agora de instâncias vivas, não só de PackedScene)
@@ -284,9 +305,15 @@ func _definir_ativa(fase: Node, ativa: bool) -> void:
 		item.visible = ativa
 	fase.process_mode = Node.PROCESS_MODE_INHERIT if ativa else Node.PROCESS_MODE_DISABLED
 
-	# Hooks opcionais: como _ready() de cada fase só roda uma vez (na
-	# primeira instanciação), o script da fase pode implementar estes
-	# métodos pra rodar lógica a cada entrada/saída. Ignore se não precisar.
+	if ativa:
+		var cameras := fase.find_children("*", "Camera2D", true, false)
+		print("Game: fase '%s' ativa=%s -> %d Camera2D encontradas" % [fase.name, ativa, cameras.size()])
+		if not cameras.is_empty():
+			var cam := cameras[0] as Camera2D
+			print("Game: chamando make_current() em '%s' (enabled=%s, is_current antes=%s)" % [cam.get_path(), cam.enabled, cam.is_current()])
+			cam.make_current()
+			print("Game: is_current depois=%s" % cam.is_current())
+
 	if ativa and fase.has_method("ao_entrar_na_fase"):
 		fase.ao_entrar_na_fase()
 	elif not ativa and fase.has_method("ao_sair_da_fase"):

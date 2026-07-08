@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://hch5wpbp7srd"]
 
-[ext_resource type="Script" uid="uid://vvstl4vscl0u" path="res://scripts/ui/options_menu.gd" id="1_63ow6"]
+[ext_resource type="Script" uid="uid://coxwdvinbwbxs" path="res://scripts/ui/options_menu.gd" id="1_63ow6"]
 [ext_resource type="Texture2D" uid="uid://dev5db0d6vtap" path="res://assets/ui/backgrounds/Background_options.png" id="2_imaij"]
 [ext_resource type="FontFile" uid="uid://dbu8s4fraswis" path="res://assets/Fonts/Texto_P/JMH Typewriter-Thin.otf" id="3_0ejsc"]
 [ext_resource type="FontFile" uid="uid://sr7hwgne0xdf" path="res://assets/Fonts/Texto_P/JMH Typewriter.ttf" id="3_c4822"]
@@ -24,10 +24,6 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 78.0
-offset_top = 82.0
-offset_right = 78.0
-offset_bottom = 82.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_63ow6")
@@ -52,10 +48,10 @@ color = Color(0, 0, 0, 0.6)
 
 [node name="Background" type="TextureRect" parent="." unique_id=1599562582]
 layout_mode = 0
-offset_left = 391.0
-offset_top = 127.0
-offset_right = 1322.0
-offset_bottom = 893.0
+offset_left = 518.0
+offset_top = 153.0
+offset_right = 1449.0
+offset_bottom = 919.0
 texture = ExtResource("2_imaij")
 
 [node name="BtnClose" type="Button" parent="Background" unique_id=1701135556]
@@ -63,18 +59,19 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(30, 30)
 clip_contents = true
 layout_mode = 0
-offset_left = 901.0
-offset_right = 931.0
-offset_bottom = 31.0
+offset_left = 896.0
+offset_top = 3.0
+offset_right = 926.0
+offset_bottom = 34.0
 layout_direction = 3
 text = "X"
 
 [node name="FontSize" type="Label" parent="Background" unique_id=279884844]
 layout_mode = 0
-offset_left = 2.0
-offset_top = 327.0
-offset_right = 157.0
-offset_bottom = 368.0
+offset_left = 49.0
+offset_top = 325.0
+offset_right = 204.0
+offset_bottom = 366.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_0ejsc")
 theme_override_font_sizes/font_size = 32
@@ -83,19 +80,19 @@ text = "Font size"
 [node name="SliderFontSize" type="HSlider" parent="Background" unique_id=1735394560]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 181.0
-offset_top = 325.0
-offset_right = 436.0
-offset_bottom = 369.0
+offset_left = 228.0
+offset_top = 323.0
+offset_right = 483.0
+offset_bottom = 367.0
 
 [node name="Resolution" type="Label" parent="Background" unique_id=1306908768]
 layout_mode = 1
 anchors_preset = -1
 anchor_bottom = 0.287
-offset_left = 3.0
-offset_top = 385.0
-offset_right = 160.0
-offset_bottom = 213.158
+offset_left = 50.0
+offset_top = 383.0
+offset_right = 216.0
+offset_bottom = 211.158
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_0ejsc")
 theme_override_font_sizes/font_size = 32
@@ -104,17 +101,17 @@ text = "Resolução"
 [node name="BtnResolution" type="OptionButton" parent="Background" unique_id=1780144123]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 192.0
-offset_top = 394.0
-offset_right = 342.0
-offset_bottom = 441.0
+offset_left = 239.0
+offset_top = 392.0
+offset_right = 389.0
+offset_bottom = 439.0
 
 [node name="Fullscreen" type="Label" parent="Background" unique_id=2092296530]
 layout_mode = 0
-offset_left = -1.0
-offset_top = 450.0
-offset_right = 168.0
-offset_bottom = 492.0
+offset_left = 46.0
+offset_top = 448.0
+offset_right = 228.0
+offset_bottom = 490.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_0ejsc")
 theme_override_font_sizes/font_size = 32
@@ -123,18 +120,18 @@ text = "FullScreen"
 [node name="BtnFullscreen" type="CheckButton" parent="Background" unique_id=1822199499]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 192.0
-offset_top = 461.0
-offset_right = 236.0
-offset_bottom = 485.0
+offset_left = 239.0
+offset_top = 459.0
+offset_right = 283.0
+offset_bottom = 483.0
 
 [node name="Master" type="Label" parent="Background" unique_id=23237435]
 clip_contents = true
 layout_mode = 0
-offset_left = 2.0
-offset_top = 507.0
-offset_right = 159.0
-offset_bottom = 541.0
+offset_left = 49.0
+offset_top = 505.0
+offset_right = 206.0
+offset_bottom = 546.0
 layout_direction = 1
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_0ejsc")
@@ -145,18 +142,19 @@ text = "Audio "
 unique_name_in_owner = true
 clip_contents = true
 layout_mode = 0
-offset_left = 111.0
-offset_top = 522.0
-offset_right = 350.0
-offset_bottom = 538.0
+offset_left = 158.0
+offset_top = 520.0
+offset_right = 397.0
+offset_bottom = 536.0
 layout_direction = 1
 
 [node name="Music" type="Label" parent="Background" unique_id=520465112]
 clip_contents = true
 layout_mode = 0
-offset_top = 561.0
-offset_right = 114.0
-offset_bottom = 602.0
+offset_left = 47.0
+offset_top = 559.0
+offset_right = 161.0
+offset_bottom = 600.0
 layout_direction = 1
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_0ejsc")
@@ -167,19 +165,19 @@ text = "Musica"
 unique_name_in_owner = true
 clip_contents = true
 layout_mode = 0
-offset_left = 134.0
-offset_top = 578.0
-offset_right = 353.0
-offset_bottom = 594.0
+offset_left = 181.0
+offset_top = 576.0
+offset_right = 400.0
+offset_bottom = 592.0
 layout_direction = 1
 
 [node name="Sfx" type="Label" parent="Background" unique_id=1580404361]
 clip_contents = true
 layout_mode = 0
-offset_left = 4.0
-offset_top = 623.0
-offset_right = 262.0
-offset_bottom = 664.0
+offset_left = 51.0
+offset_top = 621.0
+offset_right = 313.0
+offset_bottom = 662.0
 layout_direction = 1
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_0ejsc")
@@ -190,18 +188,18 @@ text = "Efeitos Sonoros"
 unique_name_in_owner = true
 clip_contents = true
 layout_mode = 0
-offset_left = 278.0
-offset_top = 639.0
-offset_right = 426.0
-offset_bottom = 655.0
+offset_left = 325.0
+offset_top = 637.0
+offset_right = 473.0
+offset_bottom = 653.0
 layout_direction = 1
 
 [node name="MouseSensibility" type="Label" parent="Background" unique_id=1777829145]
 layout_mode = 0
-offset_left = 3.0
-offset_top = 687.0
-offset_right = 193.0
-offset_bottom = 710.0
+offset_left = 50.0
+offset_top = 685.0
+offset_right = 447.0
+offset_bottom = 726.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_0ejsc")
 theme_override_font_sizes/font_size = 32
@@ -210,26 +208,33 @@ text = "Sensibilidade do mouse"
 [node name="SliderMouseSensitivity" type="HSlider" parent="Background" unique_id=2119877122]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 417.0
-offset_top = 703.0
-offset_right = 640.0
-offset_bottom = 719.0
+offset_left = 464.0
+offset_top = 701.0
+offset_right = 687.0
+offset_bottom = 717.0
 
-[node name="ContainerBindings" type="Control" parent="Background" unique_id=810587364]
+[node name="BtnKeys" type="Button" parent="Background" unique_id=1156349871]
 unique_name_in_owner = true
-anchors_preset = 0
-offset_left = -391.0
-offset_top = -80.0
-offset_right = -201.0
-offset_bottom = -80.0
+layout_mode = 0
+offset_left = 600.0
+offset_top = 260.0
+offset_right = 653.0
+offset_bottom = 281.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("3_c4822")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_ovlcw")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_gff41")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_dqh3v")
+text = "Teclas"
 
 [node name="BtnApply" type="Button" parent="Background" unique_id=1227708412]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 339.0
-offset_top = 264.0
-offset_right = 405.0
-offset_bottom = 285.0
+offset_left = 280.0
+offset_top = 260.0
+offset_right = 346.0
+offset_bottom = 281.0
 layout_direction = 4
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
@@ -242,10 +247,10 @@ text = "Aplicar"
 [node name="BtnBack" type="Button" parent="Background" unique_id=188552097]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 558.0
-offset_top = 265.0
-offset_right = 613.0
-offset_bottom = 286.0
+offset_left = 440.0
+offset_top = 260.0
+offset_right = 500.0
+offset_bottom = 284.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
 theme_override_fonts/font = ExtResource("3_c4822")

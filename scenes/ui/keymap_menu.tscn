@@ -1,0 +1,119 @@
+[gd_scene format=3 uid="uid://beskhun4fy88r"]
+
+[ext_resource type="Script" uid="uid://bl6x80lly2m6l" path="res://scripts/ui/keymap_menu.gd" id="1_rh2gp"]
+[ext_resource type="Texture2D" uid="uid://dev5db0d6vtap" path="res://assets/ui/backgrounds/Background_options.png" id="2_x576n"]
+[ext_resource type="FontFile" uid="uid://sr7hwgne0xdf" path="res://assets/Fonts/Texto_P/JMH Typewriter.ttf" id="3_iyaqr"]
+
+[sub_resource type="Animation" id="Animation_imaij"]
+resource_name = "MenuOpcoes"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_c4822"]
+_data = {
+&"MenuOpcoes": SubResource("Animation_imaij")
+}
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ovlcw"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gff41"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dqh3v"]
+
+[node name="KeymapMenu" type="Control" unique_id=1034167137]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 78.0
+offset_top = 82.0
+offset_right = 78.0
+offset_bottom = 82.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rh2gp")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=651140833]
+unique_name_in_owner = true
+libraries/ = SubResource("AnimationLibrary_c4822")
+
+[node name="Overlay" type="ColorRect" parent="." unique_id=1733942659]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 87.0
+offset_top = 80.0
+offset_right = 87.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Background" type="TextureRect" parent="." unique_id=1599562582]
+layout_mode = 0
+offset_left = 391.0
+offset_top = 127.0
+offset_right = 1322.0
+offset_bottom = 893.0
+texture = ExtResource("2_x576n")
+
+[node name="BtnClose" type="Button" parent="Background" unique_id=1701135556]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 30)
+clip_contents = true
+layout_mode = 0
+offset_left = 901.0
+offset_right = 931.0
+offset_bottom = 31.0
+layout_direction = 3
+text = "X"
+
+[node name="Title" type="Label" parent="Background" unique_id=339217544]
+layout_mode = 0
+offset_left = 265.0
+offset_top = 287.0
+offset_right = 670.0
+offset_bottom = 328.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_iyaqr")
+theme_override_font_sizes/font_size = 32
+text = "Remapeamento de Teclas"
+
+[node name="ContainerBindings" type="Control" parent="Background" unique_id=810587364]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_left = 110.0
+offset_top = 361.0
+offset_right = 1107.0
+offset_bottom = 841.0
+
+[node name="BtnApply" type="Button" parent="Background" unique_id=1227708412]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 339.0
+offset_top = 264.0
+offset_right = 405.0
+offset_bottom = 285.0
+layout_direction = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("3_iyaqr")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_ovlcw")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_gff41")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_dqh3v")
+text = "Aplicar"
+
+[node name="BtnBack" type="Button" parent="Background" unique_id=188552097]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 558.0
+offset_top = 265.0
+offset_right = 613.0
+offset_bottom = 286.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
+theme_override_fonts/font = ExtResource("3_iyaqr")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_ovlcw")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_gff41")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_dqh3v")
+text = "Voltar"

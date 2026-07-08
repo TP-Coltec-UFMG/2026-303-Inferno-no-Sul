@@ -16,9 +16,14 @@ signal menu_closed
 @onready var option_resolution: OptionButton = %BtnResolution
 
 @onready var slider_mouse_sensitivity: HSlider = %SliderMouseSensitivity
-@onready var container_bindings: Control = %ContainerBindings
 
 @onready var slider_font_size: HSlider = %SliderFontSize
+
+@onready var btn_keys: Button = %BtnKeys
+
+# ─── Cena do menu de remapeamento de teclas ─────────────────────────────────
+const KEYMAP_MENU_SCENE := preload("res://scenes/ui/keymap_menu.tscn")
+var _keymap_instance: Control = null
 
 # ─── Configuração de fonte ───────────────────────────────────────────────────
 
@@ -36,13 +41,6 @@ const RESOLUTIONS := [
 	Vector2i(3840, 2160),
 ]
 
-const REMAPPABLE_ACTIONS := [
-	"move_left", "move_right", "move_up", "move_down",
-	"jump", "attack", "interact", "pause",
-	"correr", "agachar",
-]
-
-
 # ════════════════════════════════════════════════════════════════════════════
 #  CICLO DE VIDA
 # ════════════════════════════════════════════════════════════════════════════
@@ -50,7 +48,6 @@ const REMAPPABLE_ACTIONS := [
 func _ready() -> void:
 	_populate_resolutions()
 	_load_settings()
-	_build_rebind_list()
 	_connect_signals()
 	set_process_unhandled_input(true)
 
@@ -77,43 +74,6 @@ func _populate_resolutions() -> void:
 		option_resolution.add_item("%d × %d" % [res.x, res.y])
 
 
-func _build_rebind_list() -> void:
-	for child in container_bindings.get_children():
-		child.queue_free()
-
-	var y_offset := 0
-	var row_height := 40
-
-	for action in REMAPPABLE_ACTIONS:
-		var label := Label.new()
-		label.text = action.replace("_", " ").capitalize()
-		label.position = Vector2(0, y_offset)
-		container_bindings.add_child(label)
-
-		var btn := Button.new()
-		btn.text = _get_action_key_label(action)
-		btn.position = Vector2(200, y_offset)
-		btn.pressed.connect(_start_rebind.bind(action, btn))
-		container_bindings.add_child(btn)
-
-		# Garante que os novos nós também recebam a fonte padrão
-		label.add_theme_font_size_override("font_size", DEFAULT_FONT_SIZE)
-		btn.add_theme_font_size_override("font_size", DEFAULT_FONT_SIZE)
-
-		y_offset += row_height
-
-
-func _get_action_key_label(action: String) -> String:
-	for event in InputMap.action_get_events(action):
-		if event is InputEventKey:
-			return OS.get_keycode_string(event.physical_keycode)
-		if event is InputEventJoypadButton:
-			return "Btn %d" % event.button_index
-		if event is InputEventMouseButton:
-			return "Mouse %d" % event.button_index
-	return "---"
-
-
 # ════════════════════════════════════════════════════════════════════════════
 #  FONTE — APLICAÇÃO GLOBAL (32px padrão, ajustável)
 # ════════════════════════════════════════════════════════════════════════════
@@ -124,7 +84,7 @@ func _apply_font_size_to_all(size: int, node: Node = self) -> void:
 	for child in node.get_children():
 		if child is Label or child is Button or child is CheckButton or child is OptionButton:
 			child.add_theme_font_size_override("font_size", size)
-		# Chama recursivamente para pegar nós aninhados (ex: ContainerBindings)
+		# Chama recursivamente para pegar nós aninhados
 		_apply_font_size_to_all(size, child)
 
 
@@ -217,59 +177,6 @@ func _set_bus_volume(bus_name: String, db_value: float) -> void:
 
 
 # ════════════════════════════════════════════════════════════════════════════
-#  REBIND DE TECLAS
-# ════════════════════════════════════════════════════════════════════════════
-
-var _rebinding_action := ""
-var _rebinding_button: Button = null
-var _rebind_locked := false
-
-
-func _start_rebind(action: String, btn: Button) -> void:
-	_rebinding_action = action
-	_rebinding_button = btn
-	btn.text = "[ Pressione uma tecla... ]"
-	set_process_unhandled_input(false)
-	_rebind_locked = true
-	await get_tree().create_timer(0.2).timeout
-	_rebind_locked = false
-	set_process_input(true)
-
-
-func _input(event: InputEvent) -> void:
-	if _rebinding_action.is_empty():
-		return
-	if _rebind_locked:
-		return
-	if not (event is InputEventKey or event is InputEventJoypadButton or event is InputEventMouseButton):
-		return
-	if event is InputEventKey or event is InputEventMouseButton:
-		if not event.pressed:
-			return
-		get_viewport().set_input_as_handled()
-	if event is InputEventKey and event.keycode == KEY_ESCAPE:
-		_cancel_rebind()
-		return
-
-	InputManager.definir_evento(_rebinding_action, event)
-	_rebinding_button.text = _get_action_key_label(_rebinding_action)
-	_rebinding_button.add_theme_font_size_override("font_size", int(slider_font_size.value))
-	_rebinding_action = ""
-	_rebinding_button = null
-	set_process_input(false)
-	set_process_unhandled_input(true)
-
-
-func _cancel_rebind() -> void:
-	if _rebinding_button:
-		_rebinding_button.text = _get_action_key_label(_rebinding_action)
-	_rebinding_action = ""
-	_rebinding_button = null
-	set_process_input(false)
-	set_process_unhandled_input(true)
-
-
-# ════════════════════════════════════════════════════════════════════════════
 #  SINAIS E HANDLERS
 # ════════════════════════════════════════════════════════════════════════════
 
@@ -277,8 +184,30 @@ func _connect_signals() -> void:
 	btn_apply.pressed.connect(_on_apply_pressed)
 	btn_back.pressed.connect(_on_back_pressed)
 	btn_close.pressed.connect(_on_back_pressed)
+	btn_keys.pressed.connect(_on_keys_pressed)
 	check_fullscreen.toggled.connect(_on_fullscreen_toggled)
 	slider_font_size.value_changed.connect(_on_font_size_changed)
+
+
+## Abre a cena de remapeamento de teclas por cima do menu de opções.
+func _on_keys_pressed() -> void:
+	if _keymap_instance:
+		return
+
+	_keymap_instance = KEYMAP_MENU_SCENE.instantiate()
+	get_parent().add_child(_keymap_instance)
+	_keymap_instance.menu_closed.connect(_on_keymap_menu_closed)
+
+	# Esconde o menu de opções enquanto o de teclas está aberto
+	visible = false
+
+
+## Chamado quando o menu de teclas é fechado (botão Voltar/X ou ESC).
+func _on_keymap_menu_closed() -> void:
+	visible = true
+	if is_instance_valid(_keymap_instance):
+		_keymap_instance.queue_free()
+	_keymap_instance = null
 
 
 func _on_apply_pressed() -> void:

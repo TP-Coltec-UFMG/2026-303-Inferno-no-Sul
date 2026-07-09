@@ -159,6 +159,7 @@ text = "Resolução"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 
 [node name="RowFullscreen" type="HBoxContainer" parent="ScrollContainer/Configs" unique_id=566569269]
 layout_mode = 2
@@ -174,7 +175,8 @@ text = "FullScreen"
 [node name="BtnFullscreen" type="CheckButton" parent="ScrollContainer/Configs/RowFullscreen" unique_id=454380323]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 2
+size_flags_vertical = 4
 
 [node name="RowMaster" type="HBoxContainer" parent="ScrollContainer/Configs" unique_id=655491019]
 layout_mode = 2
@@ -194,6 +196,7 @@ unique_name_in_owner = true
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 layout_direction = 1
 
 [node name="RowMusic" type="HBoxContainer" parent="ScrollContainer/Configs" unique_id=1509390366]
@@ -214,6 +217,7 @@ unique_name_in_owner = true
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 layout_direction = 1
 
 [node name="RowSfx" type="HBoxContainer" parent="ScrollContainer/Configs" unique_id=1505362130]
@@ -235,7 +239,7 @@ unique_name_in_owner = true
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 2
+size_flags_vertical = 4
 layout_direction = 1
 
 [node name="RowMouse" type="HBoxContainer" parent="ScrollContainer/Configs" unique_id=1812320781]
@@ -253,3 +257,4 @@ text = "Sensibilidade do mouse"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4

@@ -25,11 +25,7 @@ signal menu_closed
 const KEYMAP_MENU_SCENE := preload("res://scenes/ui/keymap_menu.tscn")
 var _keymap_instance: Control = null
 
-# ─── Configuração de fonte ───────────────────────────────────────────────────
 
-const DEFAULT_FONT_SIZE := 32
-const MIN_FONT_SIZE := 16
-const MAX_FONT_SIZE := 64
 
 # ─── Dados ───────────────────────────────────────────────────────────────────
 
@@ -47,12 +43,12 @@ const RESOLUTIONS := [
 
 func _ready() -> void:
 	_populate_resolutions()
+	slider_font_size.min_value = FontManager.MIN_FONT_SIZE
+	slider_font_size.max_value = FontManager.MAX_FONT_SIZE
+	slider_font_size.step = 1
 	_load_settings()
 	_connect_signals()
 	set_process_unhandled_input(true)
-
-	# Aplica a fonte padrão em tudo antes de qualquer coisa ficar visível
-	_apply_font_size_to_all(DEFAULT_FONT_SIZE)
 
 	position.y = get_viewport_rect().size.y
 	var tween := create_tween().set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
@@ -74,28 +70,6 @@ func _populate_resolutions() -> void:
 		option_resolution.add_item("%d × %d" % [res.x, res.y])
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  FONTE — APLICAÇÃO GLOBAL (32px padrão, ajustável)
-# ════════════════════════════════════════════════════════════════════════════
-
-## Aplica um tamanho de fonte fixo recursivamente em todos os
-## Labels, Buttons, CheckButtons e OptionButtons abaixo de "node".
-func _apply_font_size_to_all(size: int, node: Node = self) -> void:
-	for child in node.get_children():
-		if child is Label or child is Button or child is CheckButton or child is OptionButton:
-			child.add_theme_font_size_override("font_size", size)
-		# Chama recursivamente para pegar nós aninhados
-		_apply_font_size_to_all(size, child)
-
-
-## Chamado quando o slider de acessibilidade muda — reaplica em tudo.
-func _on_font_size_changed(value: float) -> void:
-	var size := clampi(int(value), MIN_FONT_SIZE, MAX_FONT_SIZE)
-	_apply_font_size_to_all(size)
-
-	var root_theme := ThemeDB.get_project_theme()
-	if root_theme:
-		root_theme.default_font_size = size
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -116,12 +90,13 @@ func _load_settings() -> void:
 
 	slider_mouse_sensitivity.value = SettingsManager.get_setting("controls.mouse_sensitivity")
 
-	# Se não houver valor salvo ainda, usa DEFAULT_FONT_SIZE
-	var saved_font_size = SettingsManager.get_setting("accessibility.font_size")
-	slider_font_size.value = saved_font_size if saved_font_size > 0 else DEFAULT_FONT_SIZE
-
+	var saved_font_size := int(SettingsManager.get_setting("accessibility.font_size"))
+	slider_font_size.value = clampi(
+		saved_font_size if saved_font_size > 0 else FontManager.DEFAULT_FONT_SIZE,
+		FontManager.MIN_FONT_SIZE,
+		FontManager.MAX_FONT_SIZE
+	)
 	_apply_all()
-
 
 func _save_settings() -> void:
 	SettingsManager.set_setting("audio.master", slider_master.value)
@@ -167,7 +142,7 @@ func _apply_video() -> void:
 
 
 func _apply_accessibility() -> void:
-	_on_font_size_changed(slider_font_size.value)
+	FontManager.definir_tamanho(int(slider_font_size.value))
 
 
 func _set_bus_volume(bus_name: String, db_value: float) -> void:
@@ -186,8 +161,13 @@ func _connect_signals() -> void:
 	btn_close.pressed.connect(_on_back_pressed)
 	btn_keys.pressed.connect(_on_keys_pressed)
 	check_fullscreen.toggled.connect(_on_fullscreen_toggled)
-	slider_font_size.value_changed.connect(_on_font_size_changed)
+	slider_font_size.value_changed.connect(_on_slider_font_size_changed)
 
+
+## Reage em tempo real ao arrastar o slider (preview), sem salvar ainda.
+## O valor só é persistido quando o usuário aperta "Aplicar".
+func _on_slider_font_size_changed(value: float) -> void:
+	FontManager.definir_tamanho(int(value))
 
 ## Abre a cena de remapeamento de teclas por cima do menu de opções.
 func _on_keys_pressed() -> void:

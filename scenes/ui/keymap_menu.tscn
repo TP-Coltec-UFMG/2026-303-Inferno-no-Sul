@@ -51,49 +51,24 @@ color = Color(0, 0, 0, 0.6)
 
 [node name="Background" type="TextureRect" parent="." unique_id=1599562582]
 layout_mode = 0
-offset_left = 391.0
-offset_top = 127.0
-offset_right = 1322.0
-offset_bottom = 893.0
+offset_left = 301.0
+offset_top = 35.0
+offset_right = 1576.0
+offset_bottom = 979.0
 texture = ExtResource("2_x576n")
 
-[node name="BtnClose" type="Button" parent="Background" unique_id=1701135556]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(30, 30)
-clip_contents = true
+[node name="Bttns" type="HBoxContainer" parent="Background" unique_id=1178212597]
 layout_mode = 0
-offset_left = 901.0
-offset_right = 931.0
-offset_bottom = 31.0
-layout_direction = 3
-text = "X"
+offset_left = 444.0
+offset_top = 308.0
+offset_right = 856.0
+offset_bottom = 365.0
+theme_override_constants/separation = 32
+alignment = 1
 
-[node name="Title" type="Label" parent="Background" unique_id=339217544]
-layout_mode = 0
-offset_left = 265.0
-offset_top = 287.0
-offset_right = 670.0
-offset_bottom = 328.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("3_iyaqr")
-theme_override_font_sizes/font_size = 32
-text = "Remapeamento de Teclas"
-
-[node name="ContainerBindings" type="Control" parent="Background" unique_id=810587364]
+[node name="BtnApply" type="Button" parent="Background/Bttns" unique_id=1227708412]
 unique_name_in_owner = true
-anchors_preset = 0
-offset_left = 110.0
-offset_top = 361.0
-offset_right = 1107.0
-offset_bottom = 841.0
-
-[node name="BtnApply" type="Button" parent="Background" unique_id=1227708412]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 339.0
-offset_top = 264.0
-offset_right = 405.0
-offset_bottom = 285.0
+layout_mode = 2
 layout_direction = 4
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
@@ -103,13 +78,9 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_gff41")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_dqh3v")
 text = "Aplicar"
 
-[node name="BtnBack" type="Button" parent="Background" unique_id=188552097]
+[node name="BtnBack" type="Button" parent="Background/Bttns" unique_id=188552097]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 558.0
-offset_top = 265.0
-offset_right = 613.0
-offset_bottom = 286.0
+layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0.32156864, 0.32156864, 0.32156864, 1)
 theme_override_fonts/font = ExtResource("3_iyaqr")
@@ -117,3 +88,38 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_ovlcw")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_gff41")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_dqh3v")
 text = "Voltar"
+
+[node name="BtnClose" type="Button" parent="Background" unique_id=1701135556]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(30, 30)
+clip_contents = true
+layout_mode = 0
+offset_left = 1036.0
+offset_top = 1.0
+offset_right = 1066.0
+offset_bottom = 32.0
+layout_direction = 3
+text = "X"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Background" unique_id=753676013]
+layout_mode = 0
+offset_left = 125.0
+offset_top = 383.0
+offset_right = 1202.0
+offset_bottom = 907.0
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Title" type="Label" parent="Background/VBoxContainer" unique_id=339217544]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_iyaqr")
+theme_override_font_sizes/font_size = 32
+text = "Remapeamento de Teclas"
+horizontal_alignment = 1
+
+[node name="ContainerBindings" type="Control" parent="Background/VBoxContainer" unique_id=810587364]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3

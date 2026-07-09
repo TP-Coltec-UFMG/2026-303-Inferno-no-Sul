@@ -28,6 +28,7 @@ InputManager="*res://scripts/player/input_manager.gd"
 NPCManager="*res://scripts/autoloads/npc_manager.gd"
 LoreManager="*res://scripts/autoloads/lore_manager.gd"
 EventBus="*uid://cl4c43pm73yi"
+FontManager="*uid://dr0p0alq4e0te"
 
 [display]
 

@@ -44,7 +44,7 @@ const _DEFAULTS: Dictionary = {
 	"controls.mouse_sensitivity":   1.0,   # multiplicador (0.1 – 5.0)
 
 	# ── Acessibilidade ───────────────────────────────────────────────────
-	"accessibility.font_size":      16,    # int (12 – 32)
+	"accessibility.font_size":      72,    # int (40 – 140), padrão 72
 	"accessibility.high_contrast":  false,
 }
 

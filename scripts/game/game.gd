@@ -168,36 +168,59 @@ func _sair_para_menu() -> void:
 func ir_para_fase(path: String, spawn_id: String = "", salvar_apos: bool = false) -> void:
 	if path == _path_atual:
 		return
-
 	_sincronizar_npcs()
-
 	var nova_fase := _obter_instancia(path)
 	if nova_fase == null:
 		push_error("Game: falha ao carregar '%s'." % path)
 		return
-
 	if not spawn_id.is_empty():
 		var posicao: Vector2 = _achar_posicao_spawn(nova_fase, spawn_id)
 		if posicao != Vector2.INF:
-			var player := nova_fase.get_node_or_null("Player") as Node2D
+			var player := nova_fase.get_node_or_null("Player") as MC
 			if player:
 				player.global_position = posicao
+				_mover_companheiro_para_fase(player, nova_fase)
 		else:
 			push_error("Game: nenhum PontoSpawn com id '%s' encontrado em '%s'." % [spawn_id, path])
-
 	if _fase_atual != null:
 		_definir_ativa(_fase_atual, false)
-
 	_path_atual = path
 	_fase_atual = nova_fase
 	_definir_ativa(_fase_atual, true)
-
-	# Atualiza botão salvar se pause estiver aberto
 	if is_instance_valid(_pause_menu):
 		_pause_menu.pode_salvar = (_path_atual == FASE_PATIO)
-
 	if salvar_apos:
 		SaveManager.salvar_atual(get_tree())
+
+
+## Reparenta o companheiro atual do player para a nova fase, junto dele.
+## Se a nova fase já tiver um Companheiro próprio na cena, ele é removido
+## (o companheiro "real" é sempre o que o player já possui).
+func _mover_companheiro_para_fase(player: MC, nova_fase: Node) -> void:
+	var comp := player.companheiro
+
+	# Remove qualquer Companheiro pré-colocado na cena de destino
+	for existente in nova_fase.get_tree().get_nodes_in_group("companheiros"):
+		if existente == comp:
+			continue
+		if is_instance_valid(existente) and existente.get_parent():
+			existente.get_parent().remove_child(existente)
+			existente.queue_free()
+
+	if comp == null or not is_instance_valid(comp):
+		return
+
+	var pai_antigo := comp.get_parent()
+	if pai_antigo:
+		pai_antigo.remove_child(comp)
+	nova_fase.add_child(comp)
+
+	comp.jogador = player
+	comp.global_position = player.global_position + Vector2(40.0, 0.0)
+
+	if comp.agente_navegacao:
+		comp.agente_navegacao.target_position = comp.global_position
+
 
 ## Procura, dentro de `fase`, um PontoSpawn (Marker2D) com o spawn_id dado.
 ## Como cada fase fica desativada (PROCESS_MODE_DISABLED) quando não está

@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://denba0ual0f0y" path="res://assets/sheets/porta.png" id="3_ajrb1"]
 [ext_resource type="PackedScene" uid="uid://oxhr0u3vdh0o" path="res://scenes/game/porta_transicao.tscn" id="3_porta"]
 [ext_resource type="Script" uid="uid://be506xpgiw8p8" path="res://scripts/game/dormitorios.gd" id="4_dorm"]
+[ext_resource type="PackedScene" uid="uid://bvvtesbmhf0bg" path="res://scenes/companheiros/doidinho.tscn" id="5_n36ty"]
 [ext_resource type="Script" uid="uid://051kgthq2cwv" path="res://scripts/autoloads/ponto_spawn.gd" id="6_ajrb1"]
 [ext_resource type="FontFile" uid="uid://dbu8s4fraswis" path="res://assets/Fonts/Texto_P/JMH Typewriter-Thin.otf" id="7_d2pmm"]
 
@@ -407,6 +408,8 @@ layer_1/tile_data = PackedInt32Array(-393216, 0, 6, -327680, 0, 7, -262144, 0, 8
 [node name="Player" parent="." unique_id=2436145 instance=ExtResource("1_kdy6m")]
 position = Vector2(117, 32)
 
+[node name="Doidinho" parent="." unique_id=1385343360 instance=ExtResource("5_n36ty")]
+
 [node name="PortaPatio" parent="." unique_id=746633794 instance=ExtResource("3_porta")]
 position = Vector2(1232.0001, 445)
 scale = Vector2(0.9, 0.9)
@@ -434,4 +437,4 @@ anchor_bottom = 1.0
 layout_mode = 2
 theme_override_fonts/normal_font = ExtResource("7_d2pmm")
 theme_override_font_sizes/normal_font_size = 32
-text = "O meu deus, O que foi isso"
+bbcode_enabled = true

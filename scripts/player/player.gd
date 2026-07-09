@@ -119,6 +119,59 @@ func _unhandled_input(event: InputEvent) -> void:
 		if inv:
 			inv.alternar()
 		get_viewport().set_input_as_handled()
+		return
+
+	_processar_comandos_companheiro(event)
+
+
+# ════════════════════════════════════════════════════════════════════════════
+#  COMANDOS DO COMPANHEIRO
+# ════════════════════════════════════════════════════════════════════════════
+
+func _processar_comandos_companheiro(event: InputEvent) -> void:
+	if companheiro == null:
+		return
+
+	if event.is_action_pressed("cmd_arremesso"):
+		ordenar_skill("arremesso", _achar_alvo_arremessavel())
+		get_viewport().set_input_as_handled()
+
+	elif event.is_action_pressed("cmd_lockpicking"):
+		ordenar_skill("lockpicking", _achar_porta_trancada())
+		get_viewport().set_input_as_handled()
+
+	elif event.is_action_pressed("cmd_distracao"):
+		ordenar_skill("distracao")
+		get_viewport().set_input_as_handled()
+
+	elif event.is_action_pressed("cmd_atirar_pedra"):
+		if companheiro is Doidinho:
+			(companheiro as Doidinho).atirar_pedra()
+		get_viewport().set_input_as_handled()
+
+	elif event.is_action_pressed("cmd_sacrificio"):
+		sacrificar_companheiro()
+		get_viewport().set_input_as_handled()
+
+
+func _achar_alvo_arremessavel(raio: float = 128.0) -> Node:
+	if companheiro == null:
+		return null
+	var origem := companheiro.global_position
+	for node: Node in get_tree().get_nodes_in_group("arremessavel"):
+		if (node as Node2D).global_position.distance_to(origem) <= raio:
+			return node
+	return null
+
+
+func _achar_porta_trancada(raio: float = 80.0) -> Node:
+	if companheiro == null:
+		return null
+	var origem := companheiro.global_position
+	for node: Node in get_tree().get_nodes_in_group("porta_trancada"):
+		if (node as Node2D).global_position.distance_to(origem) <= raio:
+			return node
+	return null
 
 
 # ════════════════════════════════════════════════════════════════════════════

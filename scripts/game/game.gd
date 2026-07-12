@@ -47,6 +47,17 @@ var _ultimo_progresso : Dictionary = {}   # path -> int (último % logado)
 
 func _ready() -> void:
 	pause_container.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
+
+	# SaveManager/NPCManager são autoloads e sobrevivem a change_scene_to_file
+	# — sem isso, jogar uma vez, voltar pro menu e clicar "Novo Jogo" (na
+	# mesma sessão do app) herdava flags/estado da partida anterior (diálogo
+	# já visto, NPCs sacrificados, pedras gastas), fazendo diálogos e
+	# prompts de porta sumirem indevidamente. Resetamos sempre que não há
+	# um carregamento de save pendente, ou seja, toda vez que é sessão nova.
+	if not SaveManager.carregar_pendente:
+		SaveManager.nova_sessao()
+		NPCManager.nova_sessao()
+
 	# Ignoramos completamente qualquer save pendente
 	SaveManager.carregar_pendente = false
 
@@ -176,10 +187,17 @@ func ir_para_fase(path: String, spawn_id: String = "", salvar_apos: bool = false
 	if not spawn_id.is_empty():
 		var posicao: Vector2 = _achar_posicao_spawn(nova_fase, spawn_id)
 		if posicao != Vector2.INF:
-			var player := nova_fase.get_node_or_null("Player") as MC
-			if player:
-				player.global_position = posicao
-				_mover_companheiro_para_fase(player, nova_fase)
+			var novo_player := nova_fase.get_node_or_null("Player") as MC
+			# O companheiro "real" está sempre no Player da fase que estamos
+			# DEIXANDO (_fase_atual), não no Player da fase de destino — cada
+			# fase tem sua própria instância de Player, e só a que o jogador
+			# está efetivamente usando tem a referência correta em .companheiro.
+			var jogador_antigo : MC = null
+			if _fase_atual != null:
+				jogador_antigo = _fase_atual.get_node_or_null("Player") as MC
+			if novo_player:
+				novo_player.global_position = posicao
+				_mover_companheiro_para_fase(jogador_antigo, novo_player, nova_fase)
 		else:
 			push_error("Game: nenhum PontoSpawn com id '%s' encontrado em '%s'." % [spawn_id, path])
 	if _fase_atual != null:
@@ -195,9 +213,10 @@ func ir_para_fase(path: String, spawn_id: String = "", salvar_apos: bool = false
 
 ## Reparenta o companheiro atual do player para a nova fase, junto dele.
 ## Se a nova fase já tiver um Companheiro próprio na cena, ele é removido
-## (o companheiro "real" é sempre o que o player já possui).
-func _mover_companheiro_para_fase(player: MC, nova_fase: Node) -> void:
-	var comp := player.companheiro
+## (o companheiro "real" é sempre o que o jogador já possui, vindo do
+## Player da fase anterior — cada fase tem sua própria instância de Player).
+func _mover_companheiro_para_fase(jogador_antigo: MC, novo_player: MC, nova_fase: Node) -> void:
+	var comp : Companheiro = jogador_antigo.companheiro if jogador_antigo else null
 
 	# Remove qualquer Companheiro pré-colocado na cena de destino
 	for existente in nova_fase.get_tree().get_nodes_in_group("companheiros"):
@@ -215,11 +234,39 @@ func _mover_companheiro_para_fase(player: MC, nova_fase: Node) -> void:
 		pai_antigo.remove_child(comp)
 	nova_fase.add_child(comp)
 
-	comp.jogador = player
-	comp.global_position = player.global_position + Vector2(40.0, 0.0)
+	comp.jogador = novo_player
+	comp.global_position = _posicao_segura_para_companheiro(comp, novo_player.global_position)
+
+	# Transfere a posse do companheiro pro Player da nova fase, e limpa do
+	# antigo — senão a próxima transição buscaria o companheiro errado
+	# (ou nenhum) de novo.
+	novo_player.companheiro = comp
+	if jogador_antigo and jogador_antigo != novo_player:
+		jogador_antigo.companheiro = null
 
 	if comp.agente_navegacao:
 		comp.agente_navegacao.target_position = comp.global_position
+
+
+## Procura uma posição livre (sem colisão com paredes) perto de `base` pra
+## reaparecer o companheiro. Antes usávamos um offset fixo (+40px em X), mas
+## dependendo do layout da sala de destino esse ponto podia cair dentro de
+## uma parede, deixando o Doidinho fisicamente preso (e por isso renderizado
+## "atrás" da parede). Testamos algumas direções ao redor do jogador com
+## test_move() e ficamos com a primeira livre; se nenhuma estiver livre,
+## caímos de volta na posição do próprio jogador (melhor sobreposto e visível
+## do que preso dentro de geometria).
+func _posicao_segura_para_companheiro(comp: CharacterBody2D, base: Vector2) -> Vector2:
+	var candidatos := [
+		Vector2(40, 0), Vector2(-40, 0), Vector2(0, 40), Vector2(0, -40),
+		Vector2(28, 28), Vector2(-28, 28), Vector2(28, -28), Vector2(-28, -28),
+	]
+	var xform := comp.global_transform
+	for offset: Vector2 in candidatos:
+		xform.origin = base + offset
+		if not comp.test_move(xform, Vector2.ZERO):
+			return base + offset
+	return base
 
 
 ## Procura, dentro de `fase`, um PontoSpawn (Marker2D) com o spawn_id dado.

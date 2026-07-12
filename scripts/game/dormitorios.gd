@@ -5,6 +5,9 @@ const FLAG_DIALOGO_INICIAL := "dormitorio_intro_visto"
 @onready var player : MC = $Player
 @onready var painel_dialogo : PanelContainer = $CanvasLayer/Panel
 @onready var label_texto : RichTextLabel = $CanvasLayer/Panel/RichTextLabel
+@onready var label_instrucao : Label = $"CanvasLayer/Instrucao_movimentacao"
+@onready var porta : PortaTransicao = $"PortaPatio"
+@onready var doidinho : Companheiro = $"Doidinho"
 
 var companheiro : Companheiro = null
 
@@ -35,12 +38,42 @@ var _falas : Array[Dictionary] = [
 func _ready() -> void:
 	player.companheiro_sacrificado.connect(_ao_sacrificio_concluido)
 
+	# Registra o Doidinho como o companheiro do jogador e o coloca pra seguir.
+	# É essa referência (player.companheiro) que o Game usa pra levar o
+	# Doidinho junto quando o jogador atravessa uma porta de transição.
+	companheiro = doidinho
+	player.companheiro = doidinho
+	doidinho.ativar(player)
+
+	var tecla_interagir: String = _obter_nome_da_tecla("interact")
+	label_instrucao.text = "Aperte " + tecla_interagir + " para ir para a próxima fala"
+	
+	# A porta precisa começar TRANCADA enquanto o diálogo inicial não foi
+	# visto — mas o valor "estado" gravado na cena (dormitorios.tscn) estava
+	# como DESBLOQUEADA por engano, deixando o player sair andando pro pátio
+	# no meio da conversa. Forçamos aqui pra garantir o comportamento certo
+	# independente do que estiver salvo no .tscn.
 	if SaveManager.obter_flag(FLAG_DIALOGO_INICIAL):
 		painel_dialogo.hide()
+		label_instrucao.hide()
+		porta.destrancar()
 	else:
+		porta.trancar()
 		_iniciar_dialogo()
 
-
+# Função auxiliar para encapsular a busca da tecla
+func _obter_nome_da_tecla(acao: String) -> String:
+	var eventos = InputMap.action_get_events(acao)
+	
+	if eventos.size() > 0:
+		var primeiro_evento = eventos[0]
+		if primeiro_evento is InputEventKey:
+			return OS.get_keycode_string(primeiro_evento.physical_keycode)
+		elif primeiro_evento is InputEventJoypadButton:
+			return "Botão " + str(primeiro_evento.button_index)
+			
+	return "[Tecla não configurada]"
+	
 func _iniciar_dialogo() -> void:
 	_dialogo_ativo = true
 	_indice_fala = 0
@@ -62,14 +95,17 @@ func _mostrar_fala_atual() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not _dialogo_ativo:
 		return
-	if event is InputEventKey and event.pressed and not event.echo:
+		
+	if event.is_action_pressed("interact"):
 		_avancar_dialogo()
-
 
 func _avancar_dialogo() -> void:
 	_indice_fala += 1
 	if _indice_fala >= _falas.size():
 		_fechar_dialogo()
+		# A porta nasce TRANCADA (ver PortaTransicao._ready), então ela já
+		# fica bloqueada durante todo o diálogo. Ao concluir, destrancamos.
+		porta.destrancar()
 	else:
 		_mostrar_fala_atual()
 
@@ -77,8 +113,10 @@ func _avancar_dialogo() -> void:
 func _fechar_dialogo() -> void:
 	_dialogo_ativo = false
 	painel_dialogo.hide()
+	label_instrucao.hide()
 	SaveManager.definir_flag(FLAG_DIALOGO_INICIAL)
 
 
 func _ao_sacrificio_concluido() -> void:
 	companheiro = null
+	player.companheiro = null

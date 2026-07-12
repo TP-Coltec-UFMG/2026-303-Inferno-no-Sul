@@ -302,3 +302,12 @@ func definir_flag(id: String, valor: bool = true) -> void:
 
 func obter_flag(id: String) -> bool:
 	return _flags.get(id, false)
+
+
+## Limpa todo o progresso de sessão (flags de diálogo/eventos vistos).
+## SaveManager é um autoload e sobrevive a change_scene_to_file — sem isso,
+## começar um "Novo Jogo" depois de já ter jogado uma vez na mesma sessão do
+## app mantinha flags antigas (ex: diálogo inicial "já visto"), fazendo
+## diálogos e prompts de porta sumirem indevidamente.
+func nova_sessao() -> void:
+	_flags.clear()

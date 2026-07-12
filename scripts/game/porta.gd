@@ -9,6 +9,7 @@ enum Estado { TRANCADA, DESBLOQUEADA, ABERTA }
 @onready var _prompt: Label = get_node_or_null("Prompt")
 
 var _player_dentro: bool = false
+var _player_ref    : Node2D = null
 
 signal estado_alterado(novo: Estado)
 
@@ -47,6 +48,7 @@ func _ao_entrar(body: Node2D) -> void:
 	
 	if body is MC:
 		_player_dentro = true
+		_player_ref = body
 		if _prompt:
 			_prompt.visible = estado != Estado.ABERTA
 
@@ -54,6 +56,7 @@ func _ao_entrar(body: Node2D) -> void:
 func _ao_sair(body: Node2D) -> void:
 	if body is MC:
 		_player_dentro = false
+		_player_ref = null
 		print("Porta '%s': body SAIU -> %s" % [id, body.name])
 		if _prompt:
 			_prompt.visible = false
@@ -62,6 +65,13 @@ func _ao_sair(body: Node2D) -> void:
 func destrancar() -> void:
 	if estado == Estado.TRANCADA:
 		_set_estado(Estado.DESBLOQUEADA)
+
+
+## Força a porta de volta para TRANCADA. Útil pra garantir o estado inicial
+## via código, independente do valor de "estado" salvo na cena (.tscn).
+func trancar() -> void:
+	if estado != Estado.TRANCADA:
+		_set_estado(Estado.TRANCADA)
 
 
 func abrir() -> void:

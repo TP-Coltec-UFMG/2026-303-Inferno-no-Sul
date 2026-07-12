@@ -24,6 +24,22 @@ func _ao_interagir() -> void:
 			push_warning("PortaTransicao '%s' está trancada." % id)
 
 
+# ─── Override: nunca desativa a área de detecção ──────────────────────────────
+#
+# Porta._aplicar_estado() desativa o CollisionShape2D quando a porta fica
+# ABERTA (faz sentido pra uma porta trancada comum, que só precisa ser usada
+# uma vez). Só que uma PortaTransicao precisa continuar detectando o jogador
+# pra sempre, senão o `_player_dentro` fica travado em `false` depois do
+# primeiro uso e o "interagir" para de responder — é exatamente o bug de
+# "entro no pátio e não consigo mais voltar". Aqui mantemos o comportamento
+# visual (prompt some quando aberta) mas garantimos que a área de trigger
+# continua sempre ativa.
+func _aplicar_estado() -> void:
+	super()
+	if has_node("CollisionShape2D"):
+		$CollisionShape2D.disabled = false
+
+
 func _transicionar() -> void:
 	if destino_path.is_empty():
 		push_error("PortaTransicao '%s': destino_path não configurado." % id)

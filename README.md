@@ -10,6 +10,9 @@ Esse novo pensamento constituiu um fundamento para a luta antimanicomial em todo
 
 O jogo Inferno no Sul traz, portanto, ao grande público, a realidade esquecida e negligenciada das casas de tratamento psiquiátrico que existiam principalmente em países em piores condições socioeconômicas, majoritariamente no Sul Global, a fim de que a luta antimanicomial seja não somente relembrada, como incentivada.
 
+
+<img width="1276" height="710" alt="image" src="https://github.com/user-attachments/assets/800a9cb8-5a6d-4cf3-a447-6ba279d1fac0" />
+
 ## Mecânicas principais
 
 O jogo conta com mecânicas de exploração, terror e sobrevivência, como:

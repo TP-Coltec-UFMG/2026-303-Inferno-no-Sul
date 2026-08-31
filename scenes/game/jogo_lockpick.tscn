@@ -1,0 +1,146 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/jogo_lockpick.gd" id="1_3tpk6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1ovw3"]
+size = Vector2(275.395, 8.406211)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jmhm5"]
+size = Vector2(273.60834, 6.637512)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3tpk6"]
+size = Vector2(274, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kfx5o"]
+size = Vector2(20, 24.226192)
+
+[node name="JogoLockpick" type="Node2D"]
+position = Vector2(960, 540)
+scale = Vector2(3, 3)
+script = ExtResource("1_3tpk6")
+metadata/_edit_group_ = true
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+offset_left = -151.0
+offset_top = -93.0
+offset_right = 140.0
+offset_bottom = 107.0
+color = Color(0.574057, 0.2796239, 0.124893315, 1)
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -143.0
+offset_top = -85.0
+offset_right = 131.0
+offset_bottom = 100.0
+color = Color(0.34781694, 0.34781697, 0.3478169, 1)
+
+[node name="Margem" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Margem"]
+position = Vector2(-6.253189, -89.274086)
+scale = Vector2(1.0000006, 1)
+shape = SubResource("RectangleShape2D_1ovw3")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Margem"]
+position = Vector2(-6.380784, 102.21965)
+scale = Vector2(1.0000004, 1)
+shape = SubResource("RectangleShape2D_jmhm5")
+
+[node name="Linha" type="Area2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Linha"]
+offset_left = -143.0
+offset_top = 8.0
+offset_right = 131.0
+offset_bottom = 9.0
+color = Color(0.8148784, 0, 0.010697155, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Linha"]
+position = Vector2(-6, 8.5)
+shape = SubResource("RectangleShape2D_3tpk6")
+
+[node name="Locks" type="Node2D" parent="."]
+
+[node name="Lock1" type="Area2D" parent="Locks"]
+position = Vector2(-102, 9)
+scale = Vector2(0.391, 4)
+metadata/_edit_group_ = true
+
+[node name="ColorRect" type="ColorRect" parent="Locks/Lock1"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+scale = Vector2(1, 1.2089549)
+color = Color(0.68307734, 0.6830774, 0.68307734, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Locks/Lock1"]
+position = Vector2(0, 2.1130962)
+scale = Vector2(1.0000001, 1)
+shape = SubResource("RectangleShape2D_kfx5o")
+
+[node name="Lock2" type="Area2D" parent="Locks"]
+position = Vector2(-40, 9)
+scale = Vector2(0.39568514, 2.8000014)
+metadata/_edit_group_ = true
+
+[node name="ColorRect" type="ColorRect" parent="Locks/Lock2"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+scale = Vector2(1, 1.2089549)
+color = Color(0.68307734, 0.6830774, 0.68307734, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Locks/Lock2"]
+position = Vector2(0.46468353, 2.1897113)
+shape = SubResource("RectangleShape2D_kfx5o")
+
+[node name="Lock3" type="Area2D" parent="Locks"]
+position = Vector2(23, 9)
+scale = Vector2(0.39999998, 1.8800013)
+metadata/_edit_group_ = true
+
+[node name="ColorRect" type="ColorRect" parent="Locks/Lock3"]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+scale = Vector2(1, 1.2089549)
+color = Color(0.68307734, 0.6830774, 0.68307734, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Locks/Lock3"]
+position = Vector2(-0.072827645, 2.1881378)
+shape = SubResource("RectangleShape2D_kfx5o")
+
+[node name="Lock4" type="Area2D" parent="Locks"]
+position = Vector2(89, 6)
+scale = Vector2(0.39999998, 1.2000006)
+metadata/_edit_group_ = true
+
+[node name="ColorRect" type="ColorRect" parent="Locks/Lock4"]
+offset_left = -8.105351
+offset_top = -10.043731
+offset_right = 11.894649
+offset_bottom = 9.956269
+scale = Vector2(0.87238413, 1.2089549)
+color = Color(0.68307734, 0.6830774, 0.68307734, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Locks/Lock4"]
+position = Vector2(0.18966345, 2.285389)
+scale = Vector2(0.821344, 1)
+shape = SubResource("RectangleShape2D_kfx5o")
+
+[node name="LabelInicial" type="Label" parent="."]
+offset_left = -135.78323
+offset_top = -54.808563
+offset_right = 319.21677
+offset_bottom = -5.808563
+scale = Vector2(0.5712108, 1)
+text = "Clique ou aperte ESPAÇO enquanto a
+ barra estiver na linha"
+horizontal_alignment = 1

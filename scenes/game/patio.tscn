@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://051kgthq2cwv" path="res://scripts/autoloads/ponto_spawn.gd" id="4_8coo7"]
 [ext_resource type="PackedScene" uid="uid://pjhkwrf7icwd" path="res://scenes/player/player.tscn" id="5_wny3h"]
 [ext_resource type="PackedScene" uid="uid://bvvtesbmhf0bg" path="res://scenes/companheiros/doidinho.tscn" id="6_t055v"]
+[ext_resource type="PackedScene" path="res://scenes/game/porta_lockpick.tscn" id="7_lockpick"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wny3h"]
 texture = ExtResource("1_g26ft")
@@ -415,10 +416,17 @@ script = ExtResource("4_8coo7")
 spawn_id = "spawn_patio_porta_dormitorios"
 metadata/_custom_type_script = "uid://051kgthq2cwv"
 
-[node name="PortaCozinha" parent="." unique_id=1127572693 instance=ExtResource("1_porta")]
+[node name="PortaCozinha" parent="." unique_id=1127572693 instance=ExtResource("7_lockpick")]
 position = Vector2(1229, 288)
 destino_path = "res://scenes/game/cozinha.tscn"
-prompt_texto = "Ir para a Cozinha  [E]"
+destino_spawn_id = "spawn_cozinha_porta_patio"
+id = "Patio_Cozinha"
+prompt_texto = "Abrir fechadura  [E]"
+estado = 0
+
+[node name="PontoSpawn" type="Marker2D" parent="PortaCozinha"]
+script = ExtResource("4_8coo7")
+spawn_id = "spawn_patio_porta_cozinha"
 
 [node name="Player" parent="." unique_id=1474875751 instance=ExtResource("5_wny3h")]
 position = Vector2(29, 27)

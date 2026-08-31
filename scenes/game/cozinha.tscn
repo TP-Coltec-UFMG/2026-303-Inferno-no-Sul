@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bfropdnimarq8"]
+[gd_scene load_steps=4 format=3 uid="uid://bfropdnimarq8"]
 
 [ext_resource type="PackedScene" path="res://scenes/game/porta_transicao.tscn" id="1_porta"]
+[ext_resource type="Script" path="res://scripts/autoloads/ponto_spawn.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
 
 [node name="Cozinha" type="Node2D"]
 
@@ -9,11 +11,20 @@
 [node name="PortaPatio" parent="." instance=ExtResource("1_porta")]
 position = Vector2(64, 300)
 destino_path = "res://scenes/game/patio.tscn"
-spawn_pos = Vector2(760, 300)
+destino_spawn_id = "spawn_patio_porta_cozinha"
+id = "Cozinha_Patio"
 prompt_texto = "Ir para o Pátio  [E]"
+estado = 1
+
+[node name="PontoSpawn" type="Marker2D" parent="PortaPatio"]
+script = ExtResource("2_spawn")
+spawn_id = "spawn_cozinha_porta_patio"
 
 [node name="PortaAdministracao" parent="." instance=ExtResource("1_porta")]
 position = Vector2(800, 300)
 destino_path = "res://scenes/game/administracao.tscn"
-spawn_pos = Vector2(64, 300)
+id = "Cozinha_Administracao"
 prompt_texto = "Ir para a Administração  [E]"
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+position = Vector2(128, 300)

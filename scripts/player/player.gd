@@ -11,7 +11,9 @@ const STAMINA_MAXIMA       : float = 100.0
 const STAMINA_CONSUMO      : float = 20.0   # por segundo correndo
 const STAMINA_REGEN        : float = 12.0   # por segundo parado/andando
 const STAMINA_MIN_CORRIDA  : float = 10.0   # mínimo para iniciar sprint
+const INTERVALO_VERIFICACAO_SOM := 0.1  
 
+var _tempo_desde_ultima_verificacao := 0.0
 var stamina       : float = STAMINA_MAXIMA
 var esta_correndo : bool  = false
 
@@ -228,9 +230,12 @@ func _redimensionar_colisao(agachado: bool) -> void:
 
 func _processar_som(direcao: Vector2, delta: float) -> void:
 	var nivel_alvo := _calcular_nivel_som(direcao)
-
-	# Suaviza variações bruscas de nível de som
 	_nivel_som_acumulado = lerpf(_nivel_som_acumulado, nivel_alvo, 4.0 * delta)
+
+	_tempo_desde_ultima_verificacao += delta
+	if _tempo_desde_ultima_verificacao < INTERVALO_VERIFICACAO_SOM:
+		return
+	_tempo_desde_ultima_verificacao = 0.0
 
 	if _nivel_som_acumulado > 5.0:
 		get_tree().call_group("inimigos", "ouvir_barulho", global_position, _nivel_som_acumulado)

@@ -54,7 +54,7 @@ Inferno no Sul é um jogo 2D de exploração, terror e sobrevivência. Entre as 
 </p>
 
 <p align="center">
-  <em>Exploração do cenário do pãtio.</em>
+  <em>Exploração do cenário do pátio.</em>
 </p>
 
 

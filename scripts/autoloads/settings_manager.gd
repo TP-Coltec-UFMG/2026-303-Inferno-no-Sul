@@ -39,6 +39,7 @@ const _DEFAULTS: Dictionary = {
 	"video.resolution_x":           1280,
 	"video.resolution_y":            720,
 	"video.vsync":                  true,
+	"video.scale_factor":           1.0,
 
 	# ── Controles ────────────────────────────────────────────────────────
 	"controls.mouse_sensitivity":   1.0,   # multiplicador (0.1 – 5.0)
@@ -171,15 +172,20 @@ func _apply_audio() -> void:
 
 
 func _apply_video() -> void:
-	if bool(get_setting("video.fullscreen")):
+	var is_fullscreen := bool(get_setting("video.fullscreen"))
+	var res := Vector2i(
+		int(get_setting("video.resolution_x")),
+		int(get_setting("video.resolution_y"))
+	)
+
+	if is_fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-
-	DisplayServer.window_set_size(Vector2i(
-		int(get_setting("video.resolution_x")),
-		int(get_setting("video.resolution_y"))
-	))
+		DisplayServer.window_set_size(res)
+		var screen_size: Vector2i = DisplayServer.screen_get_size()
+		var win_pos := Vector2i(int((screen_size.x - res.x) / 2.0), int((screen_size.y - res.y) / 2.0))
+		DisplayServer.window_set_position(win_pos)
 
 	DisplayServer.window_set_vsync_mode(
 		DisplayServer.VSYNC_ENABLED if bool(get_setting("video.vsync"))

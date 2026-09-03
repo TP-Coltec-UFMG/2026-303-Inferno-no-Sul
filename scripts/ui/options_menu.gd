@@ -18,6 +18,7 @@ signal menu_closed
 @onready var slider_mouse_sensitivity: HSlider = %SliderMouseSensitivity
 
 @onready var slider_font_size: HSlider = %SliderFontSize
+@onready var slider_scale_factor: HSlider = %SliderScaleFactor
 
 @onready var btn_keys: Button = %BtnKeys
 
@@ -90,6 +91,8 @@ func _load_settings() -> void:
 
 	slider_mouse_sensitivity.value = SettingsManager.get_setting("controls.mouse_sensitivity")
 
+	slider_scale_factor.value = float(SettingsManager.get_setting("video.scale_factor"))
+
 	var saved_font_size := int(SettingsManager.get_setting("accessibility.font_size"))
 	slider_font_size.value = clampi(
 		saved_font_size if saved_font_size > 0 else FontManager.DEFAULT_FONT_SIZE,
@@ -107,6 +110,8 @@ func _save_settings() -> void:
 	var res: Vector2i = RESOLUTIONS[option_resolution.selected]
 	SettingsManager.set_setting("video.resolution_x", res.x)
 	SettingsManager.set_setting("video.resolution_y", res.y)
+
+	SettingsManager.set_setting("video.scale_factor", slider_scale_factor.value)
 
 	SettingsManager.set_setting("controls.mouse_sensitivity", slider_mouse_sensitivity.value)
 
@@ -133,12 +138,16 @@ func _apply_audio() -> void:
 
 func _apply_video() -> void:
 	var res: Vector2i = RESOLUTIONS[option_resolution.selected]
-	DisplayServer.window_set_size(res)
+	var fullscreen := check_fullscreen.button_pressed
 
-	if check_fullscreen.button_pressed:
+	if fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(res)
+		var screen_size: Vector2i = DisplayServer.screen_get_size()
+		var win_pos := Vector2i(int((screen_size.x - res.x) / 2.0), int((screen_size.y - res.y) / 2.0))
+		DisplayServer.window_set_position(win_pos)
 
 
 func _apply_accessibility() -> void:
@@ -207,7 +216,13 @@ func _on_back_pressed() -> void:
 
 
 func _on_fullscreen_toggled(pressed: bool) -> void:
+	var res: Vector2i = RESOLUTIONS[option_resolution.selected]
+
 	if pressed:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(res)
+		var screen_size: Vector2i = DisplayServer.screen_get_size()
+		var win_pos := Vector2i(int((screen_size.x - res.x) / 2.0), int((screen_size.y - res.y) / 2.0))
+		DisplayServer.window_set_position(win_pos)

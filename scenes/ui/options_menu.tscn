@@ -178,6 +178,27 @@ layout_mode = 2
 size_flags_horizontal = 2
 size_flags_vertical = 4
 
+[node name="RowScaleFactor" type="HBoxContainer" parent="ScrollContainer/Configs"]
+layout_mode = 2
+
+[node name="ScaleFactorLabel" type="Label" parent="ScrollContainer/Configs/RowScaleFactor"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_0ejsc")
+theme_override_font_sizes/font_size = 32
+text = "Escala de Pixels"
+
+[node name="SliderScaleFactor" type="HSlider" parent="ScrollContainer/Configs/RowScaleFactor"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.5
+max_value = 2.0
+step = 0.25
+value = 1.0
+
 [node name="RowMaster" type="HBoxContainer" parent="ScrollContainer/Configs" unique_id=655491019]
 layout_mode = 2
 

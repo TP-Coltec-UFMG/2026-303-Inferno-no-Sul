@@ -6,10 +6,10 @@ class_name PortaTransicao
 
 
 func _ready() -> void:
+	if prompt_texto == "Abrir":
+		prompt_texto = "Ir para proxima area"
+
 	super()
-	prompt_texto = "Ir para proxima area  [E]"
-	if _prompt:
-		_prompt.text = prompt_texto
 
 
 func _ao_interagir() -> void:

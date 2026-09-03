@@ -19,12 +19,13 @@ signal estado_alterado(novo: Estado)
 func _ready() -> void:
 	add_to_group("salvavel")
 	add_to_group("porta_trancada")
+
 	if id.is_empty():
 		id = name
-	if _prompt:
-		_prompt.text = prompt_texto
-		_prompt.visible = false
 
+	if _prompt:
+		_atualizar_texto_prompt()
+		_prompt.visible = false
 
 func _process(_delta: float) -> void:
 	_atualizar_interacao()
@@ -71,15 +72,35 @@ func _aplicar_estado() -> void:
 
 func _deve_exibir_prompt() -> bool:
 	return estado != Estado.ABERTA
+	
+func _atualizar_texto_prompt() -> void:
+	if not _prompt:
+		return
 
+	var tecla := InputManager.tecla_da_acao("interact")
+	var nome_tecla := "E"
+
+	if tecla != KEY_NONE:
+		nome_tecla = OS.get_keycode_string(tecla)
+
+	var texto_base := prompt_texto
+
+	# Remove uma tecla escrita manualmente, como [E].
+	var pos_colchete := texto_base.rfind("[")
+	if pos_colchete != -1 and texto_base.ends_with("]"):
+		texto_base = texto_base.substr(0, pos_colchete).strip_edges()
+
+	_prompt.text = "%s  [%s]" % [texto_base, nome_tecla]
 
 func _atualizar_interacao() -> void:
 	_player_ref = _obter_player_ativo()
 	_player_dentro = _jogador_no_raio()
+
 	if _prompt:
 		_prompt.visible = _player_dentro and _deve_exibir_prompt()
+
 		if _prompt.visible:
-			_prompt.position = get_viewport().get_canvas_transform() * global_position + Vector2(-60, -52)
+			_atualizar_texto_prompt()
 
 
 func _jogador_no_raio() -> bool:

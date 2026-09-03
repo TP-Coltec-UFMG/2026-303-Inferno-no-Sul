@@ -1,13 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://bg0ypgkjsll3i"]
+[gd_scene format=3 uid="uid://bg0ypgkjsll3i"]
 
-[ext_resource type="PackedScene" path="res://scenes/game/porta_transicao.tscn" id="1_porta"]
+[ext_resource type="PackedScene" uid="uid://oxhr0u3vdh0o" path="res://scenes/game/porta_transicao.tscn" id="1_porta"]
 
-[node name="AlaPsiquiatrica" type="Node2D"]
+[node name="AlaPsiquiatrica" type="Node2D" unique_id=203551344]
 
-[node name="TileMapLayer" type="TileMapLayer" parent="."]
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1354880036]
 
-[node name="PortaDormitorios" parent="." instance=ExtResource("1_porta")]
-position = Vector2(64, 300)
+[node name="PortaDormitorios" parent="." unique_id=1092338979 instance=ExtResource("1_porta")]
+position = Vector2(283, 33)
 destino_path = "res://scenes/game/dormitorios.tscn"
 spawn_pos = Vector2(760, 500)
 prompt_texto = "Ir para os Dormitórios  [E]"

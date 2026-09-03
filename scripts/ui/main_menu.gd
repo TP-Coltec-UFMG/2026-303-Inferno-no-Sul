@@ -133,12 +133,20 @@ func _close_active_submenu() -> void:
 ## Transição suave (fade) para a próxima cena.
 ## Expanda com um AnimationPlayer ou SceneTransition autoload para efeitos reais.
 func _transition_to_scene(path: String) -> void:
-	# Desabilita botões durante a transição para evitar double-click.
 	_set_buttons_interactable(false)
 
-	# Aqui você pode chamar um Tween de fade-out antes de trocar.
-	# Exemplo básico sem animação:
-	get_tree().change_scene_to_file(path)
+	print("MainMenu: tentando abrir ", path)
+
+	var erro := get_tree().change_scene_to_file(path)
+
+	if erro != OK:
+		push_error(
+			"MainMenu: erro ao abrir '%s'. Código: %d — %s" %
+			[path, erro, error_string(erro)]
+		)
+
+		# Se a troca falhar, os botões voltam a funcionar.
+		_set_buttons_interactable(true)
 
 
 func _set_buttons_interactable(value: bool) -> void:

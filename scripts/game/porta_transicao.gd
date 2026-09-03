@@ -13,29 +13,40 @@ class_name PortaTransicao
 
 func _ready() -> void:
 	super()
-	prompt_texto = "Ir para próxima área"
-	if _prompt:
-		_prompt.text = prompt_texto
-
 
 func _ao_interagir() -> void:
-	match estado:
-		Estado.DESBLOQUEADA:
-			abrir()
-			_transicionar()
-		Estado.ABERTA:
-			_transicionar()
-		Estado.TRANCADA:
-			push_warning("PortaTransicao '%s' está trancada." % id)
+	if estado == Estado.TRANCADA:
+		push_warning(
+			"PortaTransicao '%s' está trancada." % id
+		)
+		return
+
+	_transicionar()
 
 
 func _transicionar() -> void:
 	if destino_path.is_empty():
-		push_error("PortaTransicao '%s': destino_path não configurado." % id)
+		push_error(
+			"PortaTransicao '%s': destino não configurado." % id
+		)
 		return
-	var game := get_tree().root.get_node_or_null("Game")
-	if game == null:
-		push_error("PortaTransicao: nó 'Game' não encontrado no root.")
+
+	var game := get_tree().current_scene
+
+	if game == null or not game.has_method("ir_para_fase"):
+		push_error(
+			"PortaTransicao: execute o jogo usando F5. " +
+			"O controlador Game não foi encontrado."
+		)
 		return
-	# Save fica a cargo do Game (esta porta é liberada junto com a fase antiga).
-	game.ir_para_fase(destino_path, spawn_pos, true)
+
+	print(
+		"Porta '%s': indo para '%s'." %
+		[id, destino_path]
+	)
+
+	game.ir_para_fase(
+		destino_path,
+		spawn_pos,
+		true
+	)

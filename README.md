@@ -40,16 +40,6 @@ Inferno no Sul é um jogo 2D de exploração, terror e sobrevivência. Entre as 
 - sistema de transição que mantém o companheiro junto ao jogador ao mudar de área;
 - menu de pausa e configurações durante a partida.
 
-
-<p align="center">
-  <img src="assets/readme/gameplay-dialogo.png" width="850" alt="Gameplay de Inferno no Sul">
-</p>
-
-<p align="center">
-  <em>Exploração do dormitório e sistema de diálogos.</em>
-</p>
-
-
 ### Furtividade e perseguição
 
 O jogador deve controlar a forma como se movimenta pelo cenário. Correr permite escapar mais rapidamente, porém consome stamina e produz mais ruído. Agachar-se reduz a velocidade, mas também diminui o som produzido.
@@ -77,14 +67,6 @@ Determinadas portas não podem ser abertas apenas pela interação convencional.
 Para avançar, o jogador deve completar um minigame de lockpick, acertando os comandos no momento correto. Caso falhe, pode realizar uma nova tentativa.
 
 Essa mecânica é utilizada para tornar a exploração e a abertura de novas áreas mais interativas.
-
-<p align="center">
-  <img src="assets/readme/lockpick.png" width="750" alt="Minigame de lockpick">
-</p>
-
-<p align="center">
-  <em>Minigame utilizado para desbloquear determinadas portas.</em>
-</p>
 
 ### Exploração e lore
 
@@ -137,22 +119,6 @@ Entre os recursos já presentes ou considerados durante o desenvolvimento estão
 - textos e interfaces desenvolvidos com foco em legibilidade;
 - uso de informações visuais junto às interações do jogador;
 - preocupação para que informações importantes não dependam exclusivamente de elementos sonoros.
-
-  <p align="center">
-  <img src="assets/readme/menu-opcoes.png" width="850" alt="Menu de opções e acessibilidade">
-</p>
-
-<p align="center">
-  <em>Menu de configurações com opções de vídeo, áudio e acessibilidade.</em>
-</p>
-
-## Créditos
-
-Os créditos do jogo apresentam os integrantes responsáveis pelo desenvolvimento do projeto.
-
-<p align="center">
-  <img src="assets/readme/menu-creditos.png" width="700" alt="Tela de créditos de Inferno no Sul">
-</p>
 
 O planejamento de acessibilidade do projeto foi realizado com base no checklist adaptado de **Game Accessibility Guidelines**.
 

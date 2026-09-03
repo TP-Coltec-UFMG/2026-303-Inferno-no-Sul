@@ -5,10 +5,11 @@ enum Estado { TRANCADA, DESBLOQUEADA, ABERTA }
 
 @export var id: String = ""
 @export var prompt_texto: String = "Abrir"
+@export var estado_inicial: Estado = Estado.DESBLOQUEADA
 
 @onready var _prompt: Label = get_node_or_null("Prompt")
 
-var estado: Estado = Estado.TRANCADA
+var estado: Estado = Estado.DESBLOQUEADA
 var _player_dentro: bool = false
 
 signal estado_alterado(novo: Estado)
@@ -16,14 +17,21 @@ signal estado_alterado(novo: Estado)
 
 func _ready() -> void:
 	add_to_group("salvavel")
-	add_to_group("porta_trancada")
+
 	if id == "":
 		id = name
+
+	estado = estado_inicial
+
 	body_entered.connect(_ao_entrar)
 	body_exited.connect(_ao_sair)
+
 	if _prompt:
 		_prompt.text = prompt_texto
 		_prompt.visible = false
+
+	_atualizar_grupo_trancada()
+	_aplicar_estado()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -67,6 +75,7 @@ func abrir() -> void:
 
 func _set_estado(novo: Estado) -> void:
 	estado = novo
+	_atualizar_grupo_trancada()
 	estado_alterado.emit(estado)
 	_aplicar_estado()
 
@@ -82,6 +91,15 @@ func _aplicar_estado() -> void:
 			if _prompt:
 				_prompt.visible = false
 
+func _atualizar_grupo_trancada() -> void:
+	if estado == Estado.TRANCADA:
+		if not is_in_group("porta_trancada"):
+			add_to_group("porta_trancada")
+	else:
+		if is_in_group("porta_trancada"):
+			remove_from_group("porta_trancada")
+			
+			
 
 # ── Save ──────────────────────────────────────────────────────────────────────
 
@@ -90,5 +108,6 @@ func get_save_data() -> Dictionary:
 
 
 func load_save_data(d: Dictionary) -> void:
-	estado = d.get("estado", Estado.TRANCADA) as Estado
+	estado = d.get("estado", estado_inicial) as Estado
+	_atualizar_grupo_trancada()
 	_aplicar_estado()

@@ -1,6 +1,8 @@
 extends Node2D
 
-@onready var player : MC = $Player
+@onready var mundo_y_sort: Node2D = $MundoYSort
+@onready var player: MC = $MundoYSort/Player
+@onready var spawn_doidinho: Marker2D = $Marcadores/SpawnDoidinho
 
 var _ui_pronta      : bool   = false
 var _btn_skill_arr  : Button = null
@@ -36,15 +38,31 @@ func _resolver_ui() -> void:
 
 
 func _inicializar_doidinho() -> void:
-	const ID   := "doidinho"
+	const ID := "doidinho"
 	const CENA := "res://scenes/companheiros/doidinho.tscn"
-	const SPAWN := Vector2(120.0, 200.0)
 
 	if NPCManager.obter(ID) == null:
 		var dados := NPCManager.DadosNPC.new(ID, CENA)
 		NPCManager.registrar(dados)
 
-	var npc := NPCManager.instanciar_na_cena(ID, self, player, SPAWN)
+	var spawn_local := mundo_y_sort.to_local(
+		spawn_doidinho.global_position
+	)
+
+	var npc := NPCManager.instanciar_na_cena(
+		ID,
+		mundo_y_sort,
+		player,
+		spawn_local
+	)
+
+	if npc == null:
+		return
+
+	companheiro = npc
+	player.registrar_companheiro(npc)
+	npc.skill_executada.connect(_ao_skill_executada)
+	NPCManager.pedras_atualizadas.connect(_ao_pedras_atualizadas)
 	if npc == null:
 		return
 

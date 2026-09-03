@@ -62,18 +62,48 @@ var _pausado     : bool    = false
 
 func _ready() -> void:
 	add_to_group("salvavel")
+
 	var fase := FASE_INICIAL
+
 	if SaveManager.carregar_pendente:
-		var data := SaveManager.dados_slot(SaveManager.slot_ativo)
+		var data := SaveManager.dados_slot(
+			SaveManager.slot_ativo
+		)
+
 		if data.is_empty():
-			push_warning("Game: slot %d vazio ou corrompido — abortando load." \
-					% SaveManager.slot_ativo)
+			push_warning(
+				"Game: slot %d vazio ou corrompido." \
+				% SaveManager.slot_ativo
+			)
 			SaveManager.carregar_pendente = false
 			_sair_para_menu.call_deferred()
 			return
-		fase = data.get("objetos", {}).get("game", {}).get("fase", FASE_INICIAL)
-	_precachear_fases(fase)
+
+		fase = data.get(
+			"objetos",
+			{}
+		).get(
+			"game",
+			{}
+		).get(
+			"fase",
+			FASE_INICIAL
+		)
+
+	print("Game: começando a carregar ", fase)
+
+	# Espera o Game entrar completamente na árvore.
+	await get_tree().process_frame
+
+	# Por enquanto, não usamos o carregamento em segundo plano.
 	await ir_para_fase(fase)
+
+	if _fase_atual == null:
+		push_error("Game: nenhuma fase foi carregada.")
+		return
+
+	print("Game: fase carregada com sucesso.")
+
 	if SaveManager.carregar_pendente:
 		SaveManager.carregar_atual(get_tree())
 		SaveManager.carregar_pendente = false
@@ -198,9 +228,21 @@ func ir_para_fase(path: String, spawn_pos: Vector2 = Vector2.ZERO, salvar_apos: 
 	world.add_child(_fase_atual)
 
 	if spawn_pos != Vector2.ZERO:
-		var player := _fase_atual.get_node_or_null("Player") as Node2D
+		var player := _fase_atual.get_node_or_null(
+			"MundoYSort/Player"
+		) as Node2D
+
+		# Mantém compatibilidade com as fases que ainda usam Player
+		# diretamente como filho da raiz.
+		if player == null:
+			player = _fase_atual.get_node_or_null("Player") as Node2D
+
 		if player:
 			player.global_position = spawn_pos
+		else:
+			push_warning(
+				"Game: Player não encontrado na fase '%s'." % path
+			)
 
 	# Atualiza botão salvar se pause estiver aberto
 	if is_instance_valid(_pause_menu):
@@ -217,20 +259,19 @@ func ir_para_fase(path: String, spawn_pos: Vector2 = Vector2.ZERO, salvar_apos: 
 func _obter_packed(path: String) -> PackedScene:
 	if _cache.has(path):
 		return _cache[path]
-	var packed: PackedScene = null
-	if _carregando.has(path):
-		_carregando.erase(path)
-		if ResourceLoader.load_threaded_get_status(path) == ResourceLoader.THREAD_LOAD_LOADED:
-			packed = ResourceLoader.load_threaded_get(path) as PackedScene
-		else:
-			# Async falhou ou ainda em andamento — fallback síncrono.
-			packed = load(path) as PackedScene
-	else:
-		packed = load(path) as PackedScene
-	if packed:
-		_cache[path] = packed
-	return packed
 
+	print("Game: carregando arquivo ", path)
+
+	var packed := load(path) as PackedScene
+
+	if packed == null:
+		push_error(
+			"Game: não foi possível carregar '%s'." % path
+		)
+		return null
+
+	_cache[path] = packed
+	return packed
 
 func _iniciar_carregamento_async(path: String) -> void:
 	var err := ResourceLoader.load_threaded_request(path)

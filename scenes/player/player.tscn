@@ -1,50 +1,65 @@
 [gd_scene format=3 uid="uid://pjhkwrf7icwd"]
 
 [ext_resource type="Script" uid="uid://bihkgnlj2d7pu" path="res://scripts/player/player.gd" id="1_8afob"]
+[ext_resource type="Texture2D" uid="uid://bdnp3cb3ipni7" path="res://assets/tilesets/personagens/amira/idle_down.png" id="2_dovo2"]
 
-[sub_resource type="CapsuleShape2D" id="1_colshape"]
-height = 28.0
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dovo2"]
+radius = 5.0
+height = 26.0
 
-[sub_resource type="SpriteFrames" id="2_frames"]
-animations = [{
-"frames": [],
-"loop": true,
-"name": &"crouch",
-"speed": 5.0
-}, {
-"frames": [],
-"loop": true,
-"name": &"crouch_walk",
-"speed": 6.0
-}, {
-"frames": [],
-"loop": true,
-"name": &"idle",
-"speed": 5.0
-}, {
-"frames": [],
-"loop": true,
-"name": &"run",
-"speed": 12.0
-}, {
-"frames": [],
-"loop": true,
-"name": &"walk",
-"speed": 8.0
-}]
+[sub_resource type="Animation" id="Animation_gmlin"]
+length = 0.001
+
+[sub_resource type="Animation" id="Animation_lvxji"]
+resource_name = "idle_down"
+length = 0.5
+loop_mode = 1
+
+[sub_resource type="Animation" id="Animation_p47bc"]
+resource_name = "idle_left"
+
+[sub_resource type="Animation" id="Animation_75vfm"]
+resource_name = "walk_down"
+
+[sub_resource type="Animation" id="Animation_0owmy"]
+resource_name = "walk_left"
+length = 1.2666667
+
+[sub_resource type="Animation" id="Animation_qek5x"]
+resource_name = "walk_up"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_5gtgg"]
+_data = {
+&"RESET": SubResource("Animation_gmlin"),
+&"idle_down": SubResource("Animation_lvxji"),
+&"idle_left": SubResource("Animation_p47bc"),
+&"walk_down": SubResource("Animation_75vfm"),
+&"walk_left": SubResource("Animation_0owmy"),
+&"walk_up": SubResource("Animation_qek5x")
+}
 
 [node name="Player" type="CharacterBody2D" unique_id=1474875751]
+motion_mode = 1
 script = ExtResource("1_8afob")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2134716804]
-shape = SubResource("1_colshape")
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1983210920]
-sprite_frames = SubResource("2_frames")
-animation = &"idle"
+shape = SubResource("CapsuleShape2D_dovo2")
 
 [node name="AudioFootsteps" type="AudioStreamPlayer2D" parent="." unique_id=1329175501]
 max_distance = 400.0
 
 [node name="AudioBreath" type="AudioStreamPlayer2D" parent="." unique_id=1428699838]
+position = Vector2(0, 1)
 max_distance = 200.0
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=676008103]
+zoom = Vector2(4, 4)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1800208517]
+libraries/ = SubResource("AnimationLibrary_5gtgg")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=157605142]
+texture_filter = 1
+position = Vector2(0, -2)
+scale = Vector2(0.65625, 0.8125)
+texture = ExtResource("2_dovo2")

@@ -6,7 +6,7 @@ enum Estado { TRANCADA, DESBLOQUEADA, ABERTA }
 @export var id: String = ""
 @export var prompt_texto: String = "Abrir"
 @export var estado: Estado = Estado.TRANCADA
-@export var raio_interacao: float = 48.0
+@export var raio_interacao: float = 80.0
 
 @onready var _prompt: Label = get_node_or_null("PromptLayer/Prompt")
 

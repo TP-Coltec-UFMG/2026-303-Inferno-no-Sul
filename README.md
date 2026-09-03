@@ -49,6 +49,14 @@ Inferno no Sul é um jogo 2D de exploração, terror e sobrevivência. Entre as 
   <em>Exploração do dormitório e sistema de diálogos.</em>
 </p>
 
+<p align="center">
+  <img src="assets/readme/patio.png" width="750" alt="Imagem do pátio">
+</p>
+
+<p align="center">
+  <em>Exploração do cenário do pãtio.</em>
+</p>
+
 
 ### Furtividade e perseguição
 
@@ -85,6 +93,7 @@ Essa mecânica é utilizada para tornar a exploração e a abertura de novas ár
 <p align="center">
   <em>Minigame utilizado para desbloquear determinadas portas.</em>
 </p>
+
 
 ### Exploração e lore
 

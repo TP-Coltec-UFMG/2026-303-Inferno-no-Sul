@@ -180,34 +180,55 @@ func _sair_para_menu() -> void:
 func ir_para_fase(path: String, spawn_id: String = "", salvar_apos: bool = false) -> void:
 	if path == _path_atual:
 		return
+
 	_sincronizar_npcs()
+
 	var nova_fase := _obter_instancia(path)
+
 	if nova_fase == null:
 		push_error("Game: falha ao carregar '%s'." % path)
 		return
-	if not spawn_id.is_empty():
-		var posicao: Vector2 = _achar_posicao_spawn(nova_fase, spawn_id)
-		if posicao != Vector2.INF:
-			var novo_player := _achar_player(nova_fase)
-			# O companheiro "real" está sempre no Player da fase que estamos
-			# DEIXANDO (_fase_atual), não no Player da fase de destino — cada
-			# fase tem sua própria instância de Player, e só a que o jogador
-			# está efetivamente usando tem a referência correta em .companheiro.
-			var jogador_antigo : MC = null
-			if _fase_atual != null:
-				jogador_antigo = _achar_player(_fase_atual)
-			if novo_player:
-				novo_player.global_position = posicao
-				_mover_companheiro_para_fase(jogador_antigo, novo_player, nova_fase)
-		else:
-			push_error("Game: nenhum PontoSpawn com id '%s' encontrado em '%s'." % [spawn_id, path])
+
+	var jogador_antigo: MC = null
+
 	if _fase_atual != null:
+		jogador_antigo = _achar_player(_fase_atual)
+
+		# Primeiro desativa completamente a fase antiga.
 		_definir_ativa(_fase_atual, false)
+
 	_path_atual = path
 	_fase_atual = nova_fase
+
+	# Ativa a nova fase antes de posicionar os personagens.
 	_definir_ativa(_fase_atual, true)
+
+	if not spawn_id.is_empty():
+		var posicao: Vector2 = _achar_posicao_spawn(nova_fase, spawn_id)
+
+		if posicao != Vector2.INF:
+			var novo_player := _achar_player(nova_fase)
+
+			if novo_player:
+				# Impede que a velocidade da visita anterior seja carregada.
+				novo_player.velocity = Vector2.ZERO
+
+				novo_player.global_position = posicao
+
+				_mover_companheiro_para_fase(
+					jogador_antigo,
+					novo_player,
+					nova_fase
+				)
+		else:
+			push_error(
+				"Game: nenhum PontoSpawn com id '%s' encontrado em '%s'."
+				% [spawn_id, path]
+			)
+
 	if is_instance_valid(_pause_menu):
 		_pause_menu.pode_salvar = (_path_atual == FASE_PATIO)
+
 	if salvar_apos:
 		SaveManager.salvar_atual(get_tree())
 
@@ -216,35 +237,58 @@ func ir_para_fase(path: String, spawn_id: String = "", salvar_apos: bool = false
 ## Se a nova fase já tiver um Companheiro próprio na cena, ele é removido
 ## (o companheiro "real" é sempre o que o jogador já possui, vindo do
 ## Player da fase anterior — cada fase tem sua própria instância de Player).
-func _mover_companheiro_para_fase(jogador_antigo: MC, novo_player: MC, nova_fase: Node) -> void:
-	var comp : Companheiro = jogador_antigo.companheiro if jogador_antigo else null
+func _mover_companheiro_para_fase(
+	jogador_antigo: MC,
+	novo_player: MC,
+	nova_fase: Node
+) -> void:
 
-	# Remove qualquer Companheiro pré-colocado na cena de destino
+	var comp: Companheiro = jogador_antigo.companheiro if jogador_antigo else null
+
+	# Remove qualquer companheiro pré-colocado na fase de destino.
 	for existente in nova_fase.find_children("*", "Node", true, false):
-		if existente is Companheiro and existente != comp and is_instance_valid(existente) and existente.get_parent():
-			existente.get_parent().remove_child(existente)
-			existente.queue_free()
+		if existente is Companheiro and existente != comp:
+			if is_instance_valid(existente) and existente.get_parent():
+				existente.get_parent().remove_child(existente)
+				existente.queue_free()
 
 	if comp == null or not is_instance_valid(comp):
+		novo_player.companheiro = null
 		return
 
 	var pai_antigo := comp.get_parent()
+
 	if pai_antigo:
 		pai_antigo.remove_child(comp)
+
 	var pai_destino := nova_fase.get_node_or_null("MundoYSort")
+
 	if pai_destino == null:
 		pai_destino = nova_fase
+
 	pai_destino.add_child(comp)
-
+	for shape: CollisionShape2D in comp.find_children("*", "CollisionShape2D", true, false):
+		shape.set_deferred("disabled", false)
+	
 	comp.jogador = novo_player
-	comp.global_position = novo_player.global_position
-	_transicao_geracao += 1
-	_reposicionar_companheiro_quando_pronto(comp, novo_player, _transicao_geracao)
+	comp.velocity = Vector2.ZERO
 
-	# Transfere a posse do companheiro pro Player da nova fase, e limpa do
-	# antigo — senão a próxima transição buscaria o companheiro errado
-	# (ou nenhum) de novo.
+	# Já começa afastado do jogador.
+	comp.global_position = _posicao_segura_para_companheiro(
+		comp,
+		novo_player.global_position
+	)
+
+	_transicao_geracao += 1
+
+	_reposicionar_companheiro_quando_pronto(
+		comp,
+		novo_player,
+		_transicao_geracao
+	)
+
 	novo_player.companheiro = comp
+
 	if jogador_antigo and jogador_antigo != novo_player:
 		jogador_antigo.companheiro = null
 
@@ -267,17 +311,37 @@ func _reposicionar_companheiro_quando_pronto(comp: CharacterBody2D, jogador: Nod
 ## test_move() e ficamos com a primeira livre; se nenhuma estiver livre,
 ## caímos de volta na posição do próprio jogador (melhor sobreposto e visível
 ## do que preso dentro de geometria).
-func _posicao_segura_para_companheiro(comp: CharacterBody2D, base: Vector2) -> Vector2:
+func _posicao_segura_para_companheiro(
+	comp: CharacterBody2D,
+	base: Vector2
+) -> Vector2:
+
 	var candidatos := [
-		Vector2(40, 0), Vector2(-40, 0), Vector2(0, 40), Vector2(0, -40),
-		Vector2(28, 28), Vector2(-28, 28), Vector2(28, -28), Vector2(-28, -28),
+		Vector2(56, 0),
+		Vector2(-56, 0),
+		Vector2(0, 56),
+		Vector2(0, -56),
+
+		Vector2(40, 40),
+		Vector2(-40, 40),
+		Vector2(40, -40),
+		Vector2(-40, -40),
+
+		Vector2(72, 0),
+		Vector2(-72, 0),
+		Vector2(0, 72),
+		Vector2(0, -72),
 	]
+
 	var xform := comp.global_transform
+
 	for offset: Vector2 in candidatos:
 		xform.origin = base + offset
+
 		if not comp.test_move(xform, Vector2.ZERO):
 			return base + offset
-	return base
+
+	return base + Vector2(56, 0)
 
 
 ## Procura, dentro de `fase`, um PontoSpawn (Marker2D) com o spawn_id dado.
@@ -390,14 +454,27 @@ func _definir_ativa(fase: Node, ativa: bool) -> void:
 	var item := fase as CanvasItem
 	if item:
 		item.visible = ativa
+
 	fase.process_mode = Node.PROCESS_MODE_INHERIT if ativa else Node.PROCESS_MODE_DISABLED
+
+	# Fases em cache continuam na árvore, então precisamos desligar
+	# explicitamente suas colisões quando estão inativas.
+	for shape: CollisionShape2D in fase.find_children("*", "CollisionShape2D", true, false):
+		shape.set_deferred("disabled", not ativa)
+
+	for polygon: CollisionPolygon2D in fase.find_children("*", "CollisionPolygon2D", true, false):
+		polygon.set_deferred("disabled", not ativa)
 
 	if ativa:
 		var cameras := fase.find_children("*", "Camera2D", true, false)
 		print("Game: fase '%s' ativa=%s -> %d Camera2D encontradas" % [fase.name, ativa, cameras.size()])
 		if not cameras.is_empty():
 			var cam := cameras[0] as Camera2D
-			print("Game: chamando make_current() em '%s' (enabled=%s, is_current antes=%s)" % [cam.get_path(), cam.enabled, cam.is_current()])
+			print("Game: chamando make_current() em '%s' (enabled=%s, is_current antes=%s)" % [
+				cam.get_path(),
+				cam.enabled,
+				cam.is_current()
+			])
 			cam.make_current()
 			print("Game: is_current depois=%s" % cam.is_current())
 

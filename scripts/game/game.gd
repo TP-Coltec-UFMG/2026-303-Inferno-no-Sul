@@ -39,6 +39,7 @@ var _pausado     : bool    = false
 
 # Progresso reportado no console (evita spam: só loga quando o % sobe)
 var _ultimo_progresso : Dictionary = {}   # path -> int (último % logado)
+var _transicao_geracao := 0
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -187,14 +188,14 @@ func ir_para_fase(path: String, spawn_id: String = "", salvar_apos: bool = false
 	if not spawn_id.is_empty():
 		var posicao: Vector2 = _achar_posicao_spawn(nova_fase, spawn_id)
 		if posicao != Vector2.INF:
-			var novo_player := nova_fase.get_node_or_null("Player") as MC
+			var novo_player := _achar_player(nova_fase)
 			# O companheiro "real" está sempre no Player da fase que estamos
 			# DEIXANDO (_fase_atual), não no Player da fase de destino — cada
 			# fase tem sua própria instância de Player, e só a que o jogador
 			# está efetivamente usando tem a referência correta em .companheiro.
 			var jogador_antigo : MC = null
 			if _fase_atual != null:
-				jogador_antigo = _fase_atual.get_node_or_null("Player") as MC
+				jogador_antigo = _achar_player(_fase_atual)
 			if novo_player:
 				novo_player.global_position = posicao
 				_mover_companheiro_para_fase(jogador_antigo, novo_player, nova_fase)
@@ -219,10 +220,8 @@ func _mover_companheiro_para_fase(jogador_antigo: MC, novo_player: MC, nova_fase
 	var comp : Companheiro = jogador_antigo.companheiro if jogador_antigo else null
 
 	# Remove qualquer Companheiro pré-colocado na cena de destino
-	for existente in nova_fase.get_tree().get_nodes_in_group("companheiros"):
-		if existente == comp:
-			continue
-		if is_instance_valid(existente) and existente.get_parent():
+	for existente in nova_fase.find_children("*", "Node", true, false):
+		if existente is Companheiro and existente != comp and is_instance_valid(existente) and existente.get_parent():
 			existente.get_parent().remove_child(existente)
 			existente.queue_free()
 
@@ -232,10 +231,15 @@ func _mover_companheiro_para_fase(jogador_antigo: MC, novo_player: MC, nova_fase
 	var pai_antigo := comp.get_parent()
 	if pai_antigo:
 		pai_antigo.remove_child(comp)
-	nova_fase.add_child(comp)
+	var pai_destino := nova_fase.get_node_or_null("MundoYSort")
+	if pai_destino == null:
+		pai_destino = nova_fase
+	pai_destino.add_child(comp)
 
 	comp.jogador = novo_player
-	comp.global_position = _posicao_segura_para_companheiro(comp, novo_player.global_position)
+	comp.global_position = novo_player.global_position
+	_transicao_geracao += 1
+	_reposicionar_companheiro_quando_pronto(comp, novo_player, _transicao_geracao)
 
 	# Transfere a posse do companheiro pro Player da nova fase, e limpa do
 	# antigo — senão a próxima transição buscaria o companheiro errado
@@ -244,7 +248,14 @@ func _mover_companheiro_para_fase(jogador_antigo: MC, novo_player: MC, nova_fase
 	if jogador_antigo and jogador_antigo != novo_player:
 		jogador_antigo.companheiro = null
 
-	if comp.agente_navegacao:
+
+
+func _reposicionar_companheiro_quando_pronto(comp: CharacterBody2D, jogador: Node2D, geracao: int) -> void:
+	await get_tree().physics_frame
+	if geracao != _transicao_geracao or not is_instance_valid(comp) or not is_instance_valid(jogador):
+		return
+	comp.global_position = _posicao_segura_para_companheiro(comp, jogador.global_position)
+	if comp is Companheiro and comp.agente_navegacao:
 		comp.agente_navegacao.target_position = comp.global_position
 
 
@@ -286,6 +297,12 @@ func _achar_posicao_spawn(fase: Node, spawn_id: String) -> Vector2:
 			return no.global_position
 
 	return Vector2.INF
+
+
+func _achar_player(fase: Node) -> MC:
+	if fase == null:
+		return null
+	return fase.find_child("Player", true, false) as MC
 
 # ════════════════════════════════════════════════════════════════════════════
 #  CACHE E STREAMING (agora de instâncias vivas, não só de PackedScene)

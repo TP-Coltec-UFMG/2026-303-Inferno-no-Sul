@@ -1,19 +1,40 @@
-[gd_scene load_steps=3 format=3 uid="uid://bfropdnimarq8"]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/game/porta_transicao.tscn" id="1_porta"]
+[ext_resource type="PackedScene" path="res://scenes/game/porta_lockpick.tscn" id="2_lockpick"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
+[ext_resource type="Script" path="res://scripts/autoloads/ponto_spawn.gd" id="4_spawn"]
 
 [node name="Cozinha" type="Node2D"]
-
-[node name="TileMapLayer" type="TileMapLayer" parent="."]
-
-[node name="PortaPatio" parent="." instance=ExtResource("1_porta")]
+[node name="Chao" type="TileMapLayer" parent="."]
+z_index = -30
+[node name="Paredes" type="TileMapLayer" parent="."]
+z_index = -20
+[node name="MundoYSort" type="Node2D" parent="."]
+y_sort_enabled = true
+[node name="ObjetosBaixos" type="TileMapLayer" parent="MundoYSort"]
+[node name="Player" parent="MundoYSort" instance=ExtResource("3_player")]
+position = Vector2(160, 300)
+[node name="ObjetosOrdenaveis" type="TileMapLayer" parent="MundoYSort"]
+[node name="ObjetosAltos" type="TileMapLayer" parent="."]
+z_index = 10
+[node name="Interacoes" type="Node2D" parent="."]
+[node name="PortaPatio" parent="Interacoes" instance=ExtResource("1_porta")]
 position = Vector2(64, 300)
 destino_path = "res://scenes/game/patio.tscn"
-spawn_pos = Vector2(760, 300)
-prompt_texto = "Ir para o Pátio  [E]"
-
-[node name="PortaAdministracao" parent="." instance=ExtResource("1_porta")]
+destino_spawn_id = "spawn_cozinha_patio"
+id = "Cozinha_Patio"
+estado = 1
+[node name="PontoSpawn" type="Marker2D" parent="Interacoes/PortaPatio"]
+position = Vector2(48, 0)
+script = ExtResource("4_spawn")
+spawn_id = "spawn_patio_cozinha"
+[node name="PortaAdministracao" parent="Interacoes" instance=ExtResource("2_lockpick")]
 position = Vector2(800, 300)
 destino_path = "res://scenes/game/administracao.tscn"
-spawn_pos = Vector2(64, 300)
-prompt_texto = "Ir para a Administração  [E]"
+destino_spawn_id = "spawn_cozinha_administracao"
+id = "Cozinha_Administracao"
+[node name="PontoSpawn" type="Marker2D" parent="Interacoes/PortaAdministracao"]
+position = Vector2(-48, 0)
+script = ExtResource("4_spawn")
+spawn_id = "spawn_administracao_cozinha"

@@ -2,12 +2,12 @@ extends Node2D
 
 const FLAG_DIALOGO_INICIAL := "dormitorio_intro_visto"
 
-@onready var player : MC = $Player
+@onready var player : MC = $MundoYSort/Player
 @onready var painel_dialogo : PanelContainer = $CanvasLayer/Panel
 @onready var label_texto : RichTextLabel = $CanvasLayer/Panel/RichTextLabel
 @onready var label_instrucao : Label = $"CanvasLayer/Instrucao_movimentacao"
 @onready var porta : PortaTransicao = $"PortaPatio"
-@onready var doidinho : Companheiro = $"Doidinho"
+@onready var doidinho : Companheiro = $"MundoYSort/Doidinho"
 
 var companheiro : Companheiro = null
 

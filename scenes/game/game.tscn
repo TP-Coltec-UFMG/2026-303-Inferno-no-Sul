@@ -14,5 +14,5 @@ script = ExtResource("1_game")
 [node name="LoreInventario" parent="." unique_id=1971087059 instance=ExtResource("3_linv")]
 
 [node name="PauseContainer" type="CanvasLayer" parent="." unique_id=1921984558]
-layer = 10
+layer = 100
 visible = false

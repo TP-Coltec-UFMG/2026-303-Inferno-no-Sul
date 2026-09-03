@@ -404,24 +404,46 @@ layer_1/tile_data = PackedInt32Array(-393216, 0, 6, -327680, 0, 7, -262144, 0, 8
 
 [node name="PortaDormitorios" parent="." unique_id=1404655152 instance=ExtResource("1_porta")]
 position = Vector2(16, 307)
-destino_path = "uid://c6vsi84jn8dt8"
-destino_spawn_id = "spawn_patio_porta_dormitorios"
+destino_path = "res://scenes/game/dormitorios.tscn"
+destino_spawn_id = "spawn_patio_dormitorios"
 id = "Patio_Dormitorio"
 prompt_texto = "Ir para os Dormitórios  [E]"
 estado = 2
 
 [node name="PontoSpawn" type="Marker2D" parent="PortaDormitorios" unique_id=504152068]
 script = ExtResource("4_8coo7")
-spawn_id = "spawn_patio_porta_dormitorios"
+spawn_id = "spawn_dormitorios_patio"
 metadata/_custom_type_script = "uid://051kgthq2cwv"
 
 [node name="PortaCozinha" parent="." unique_id=1127572693 instance=ExtResource("1_porta")]
 position = Vector2(1229, 288)
 destino_path = "res://scenes/game/cozinha.tscn"
+destino_spawn_id = "spawn_patio_cozinha"
+estado = 1
 prompt_texto = "Ir para a Cozinha  [E]"
 
-[node name="Player" parent="." unique_id=1474875751 instance=ExtResource("5_wny3h")]
+[node name="MundoYSort" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Player" parent="MundoYSort" unique_id=1474875751 instance=ExtResource("5_wny3h")]
 position = Vector2(29, 27)
 
-[node name="Doidinho" parent="." unique_id=1738173174 instance=ExtResource("6_t055v")]
+[node name="Doidinho" parent="MundoYSort" unique_id=1738173174 instance=ExtResource("6_t055v")]
 position = Vector2(1072, 170)
+
+[node name="PontoSpawnCozinha" type="Marker2D" parent="PortaCozinha"]
+position = Vector2(-48, 0)
+script = ExtResource("4_8coo7")
+spawn_id = "spawn_cozinha_patio"
+
+[node name="PortaAdministracao" parent="." instance=ExtResource("1_porta")]
+position = Vector2(620, 288)
+destino_path = "res://scenes/game/administracao.tscn"
+destino_spawn_id = "spawn_patio_administracao"
+id = "Patio_Administracao"
+estado = 1
+
+[node name="PontoSpawnAdministracao" type="Marker2D" parent="PortaAdministracao"]
+position = Vector2(-48, 0)
+script = ExtResource("4_8coo7")
+spawn_id = "spawn_administracao_patio"

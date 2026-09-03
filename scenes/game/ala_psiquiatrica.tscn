@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/game/porta_transicao.tscn" id="1_porta"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://scripts/autoloads/ponto_spawn.gd" id="3_spawn"]
+
+[node name="AlaPsiquiatrica" type="Node2D"]
+[node name="Chao" type="TileMapLayer" parent="."]
+z_index = -30
+[node name="Paredes" type="TileMapLayer" parent="."]
+z_index = -20
+[node name="MundoYSort" type="Node2D" parent="."]
+y_sort_enabled = true
+[node name="ObjetosBaixos" type="TileMapLayer" parent="MundoYSort"]
+[node name="Player" parent="MundoYSort" instance=ExtResource("2_player")]
+position = Vector2(160, 300)
+[node name="ObjetosOrdenaveis" type="TileMapLayer" parent="MundoYSort"]
+[node name="ObjetosAltos" type="TileMapLayer" parent="."]
+z_index = 10
+[node name="Interacoes" type="Node2D" parent="."]
+[node name="PortaDormitorios" parent="Interacoes" instance=ExtResource("1_porta")]
+position = Vector2(64, 300)
+destino_path = "res://scenes/game/dormitorios.tscn"
+destino_spawn_id = "spawn_ala_dormitorios"
+id = "Ala_Dormitorios"
+estado = 1
+[node name="PontoSpawn" type="Marker2D" parent="Interacoes/PortaDormitorios"]
+position = Vector2(48, 0)
+script = ExtResource("3_spawn")
+spawn_id = "spawn_dormitorios_ala"

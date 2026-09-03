@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bvvtesbmhf0bg"]
+
+[ext_resource type="Script" uid="uid://b8a2hblcjk7x0" path="res://scripts/npc/doidinho.gd" id="1_doidinho"]
+[ext_resource type="Texture2D" uid="uid://bf4gtuu4cm5bs" path="res://assets/sheets/costas.png" id="2_r6sds"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ssggg"]
+size = Vector2(92, 92)
+
+[node name="Doidinho" type="CharacterBody2D" unique_id=1385343360]
+script = ExtResource("1_doidinho")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1885372851]
+shape = SubResource("RectangleShape2D_ssggg")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1644595326]
+path_desired_distance = 8.0
+target_desired_distance = 16.0
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=67254273]
+texture = ExtResource("2_r6sds")

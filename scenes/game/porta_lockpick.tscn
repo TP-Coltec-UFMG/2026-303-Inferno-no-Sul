@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/game/porta_transicao.tscn" id="1_porta"]
+[ext_resource type="Script" path="res://scripts/game/porta_lockpick.gd" id="2_script"]
+
+[node name="PortaLockpick" instance=ExtResource("1_porta")]
+script = ExtResource("2_script")

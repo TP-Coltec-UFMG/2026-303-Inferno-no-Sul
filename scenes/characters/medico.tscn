@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://ch1x1wc06jef4"]
+
+[ext_resource type="Script" uid="uid://dknn103w5a4qe" path="res://scripts/enemies/medico.gd" id="1_dfdy5"]
+
+[sub_resource type="CapsuleShape2D" id="1_colshape"]
+radius = 12.0
+height = 28.0
+
+[sub_resource type="SpriteFrames" id="2_frames"]
+animations = [{
+"frames": [],
+"loop": 0,
+"name": &"grab",
+"speed": 6.0
+}, {
+"frames": [],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": 0,
+"name": &"look_around",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": 1,
+"name": &"run",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": 1,
+"name": &"walk",
+"speed": 8.0
+}]
+
+[sub_resource type="CircleShape2D" id="3_hearshape"]
+radius = 120.0
+
+[node name="Medico" type="CharacterBody2D" unique_id=1312032235]
+script = ExtResource("1_dfdy5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1458445071]
+shape = SubResource("1_colshape")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1568869888]
+sprite_frames = SubResource("2_frames")
+animation = &"idle"
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1405122266]
+path_desired_distance = 8.0
+target_desired_distance = 16.0
+
+[node name="VisionRay" type="RayCast2D" parent="." unique_id=1295085140]
+
+[node name="HearArea" type="Area2D" parent="." unique_id=988362242]
+
+[node name="HearShape" type="CollisionShape2D" parent="HearArea" unique_id=1852998024]
+shape = SubResource("3_hearshape")
+
+[node name="WaypointMarkers" type="Node2D" parent="." unique_id=1185187499]
+
+[node name="WP_1" type="Marker2D" parent="WaypointMarkers" unique_id=1057536101]
+position = Vector2(-80, 0)
+
+[node name="WP_2" type="Marker2D" parent="WaypointMarkers" unique_id=1234931630]
+position = Vector2(80, 0)

@@ -2,7 +2,7 @@ extends CharacterBody2D
 class_name MC
 
 const aceleracao        = 1500.0
-const velocidade_maxima = 350.0
+const velocidade_maxima = 650.0
 const atrito            = 1200.0
 
 # ── Corrida ──────────────────────────────────────────────────────────────────

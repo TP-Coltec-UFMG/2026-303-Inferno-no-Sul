@@ -3,13 +3,13 @@ extends Node2D
 signal venceu
 signal cancelado
 
-@onready var locks: Dictionary = {"lock1": $Locks/Lock1, "lock2": $Locks/Lock2, "lock3": $Locks/Lock3, "lock4": $Locks/Lock4}
+@onready var locks: Dictionary = {"lock1": $Locks/Lock1, "lock2": $Locks/Lock2, "lock3": $Locks/Lock3, "lock4": $Locks/Lock4, "lock5": $Locks/Lock5, "lock6": $Locks/Lock6}
 @onready var margem: Area2D = $Margem
 @onready var linha: Area2D = $Linha
 @onready var label: Label = $LabelInicial
 
 @export var dificuldade_geral := 0.7
-var ordem: Array[String] = ["lock1", "lock2", "lock3", "lock4"]
+var ordem: Array[String] = ["lock1", "lock2", "lock3", "lock4","lock5", "lock6"]
 var velocidades: Dictionary = {}
 var posicoes_iniciais: Dictionary = {}
 var jogo_iniciado := false

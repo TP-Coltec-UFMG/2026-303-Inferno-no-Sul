@@ -155,7 +155,7 @@ scale = Vector2(0.9, 0.9)
 destino_path = "res://scenes/game/patio.tscn"
 destino_spawn_id = "spawn_dormitorios_patio"
 id = "Dormitorio_Patio"
-prompt_texto = "Ir para o Pátio???"
+prompt_texto = "Ir para o Pátio  [E]"
 estado = 1
 raio_interacao = 50.0
 

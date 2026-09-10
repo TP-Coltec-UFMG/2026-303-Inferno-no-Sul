@@ -1,20 +1,25 @@
 [gd_scene format=3 uid="uid://bvvtesbmhf0bg"]
 
 [ext_resource type="Script" uid="uid://b8a2hblcjk7x0" path="res://scripts/npc/doidinho.gd" id="1_doidinho"]
-[ext_resource type="Texture2D" uid="uid://bf4gtuu4cm5bs" path="res://assets/sheets/costas.png" id="2_r6sds"]
+[ext_resource type="Texture2D" uid="uid://ccwd72vi20n4t" path="res://assets/personagem/doidinho/doidinho_stop.png" id="2_r6sds"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ssggg"]
-size = Vector2(92, 92)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_eygr5"]
+radius = 33.0
+height = 118.0
 
 [node name="Doidinho" type="CharacterBody2D" unique_id=1385343360]
 script = ExtResource("1_doidinho")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1885372851]
-shape = SubResource("RectangleShape2D_ssggg")
+rotation = 0.0025159912
+shape = SubResource("CapsuleShape2D_eygr5")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1644595326]
 path_desired_distance = 8.0
 target_desired_distance = 16.0
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=67254273]
+[node name="DoidinhoStop" type="Sprite2D" parent="." unique_id=2001771205]
+texture_filter = 1
+position = Vector2(-2.9999995, -3)
+scale = Vector2(3.59375, 4.0625)
 texture = ExtResource("2_r6sds")

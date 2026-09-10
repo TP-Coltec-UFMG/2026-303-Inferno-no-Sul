@@ -1,17 +1,18 @@
 [gd_scene format=3 uid="uid://pjhkwrf7icwd"]
 
 [ext_resource type="Script" uid="uid://bihkgnlj2d7pu" path="res://scripts/player/player.gd" id="1_8afob"]
-[ext_resource type="Texture2D" uid="uid://b5wb08s4v8r2x" path="res://assets/sheets/sheetInicial.png" id="2_dovo2"]
+[ext_resource type="Texture2D" uid="uid://dc8t1dibtntms" path="res://assets/personagem/amira/amira_stop.png" id="2_dovo2"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_c4822"]
-size = Vector2(51, 45)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_aqq27"]
+radius = 32.5
+height = 77.0
 
 [node name="Player" type="CharacterBody2D" unique_id=1474875751]
 script = ExtResource("1_8afob")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2134716804]
 position = Vector2(-0.5, 0.5)
-shape = SubResource("RectangleShape2D_c4822")
+shape = SubResource("CapsuleShape2D_aqq27")
 
 [node name="AudioFootsteps" type="AudioStreamPlayer2D" parent="." unique_id=1329175501]
 max_distance = 400.0
@@ -21,11 +22,8 @@ max_distance = 200.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=992641602]
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=602133287]
-position = Vector2(-0.99999905, 1)
-scale = Vector2(0.51705974, 0.45555368)
+[node name="AmiraStop" type="Sprite2D" parent="." unique_id=1776067375]
+texture_filter = 1
+position = Vector2(2, -47)
+scale = Vector2(4.359375, 4.632813)
 texture = ExtResource("2_dovo2")
-hframes = 3
-vframes = 3
-frame = 2
-region_rect = Rect2(201.49031, 0.38199043, 76.69426, 96.63449)

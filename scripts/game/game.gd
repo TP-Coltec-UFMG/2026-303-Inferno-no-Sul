@@ -267,8 +267,8 @@ func _mover_companheiro_para_fase(
 		pai_destino = nova_fase
 
 	pai_destino.add_child(comp)
-	for shape: CollisionShape2D in comp.find_children("*", "CollisionShape2D", true, false):
-		shape.set_deferred("disabled", false)
+	# Restaura o estado ORIGINAL das colisões do companheiro (em vez de ligar tudo).
+	_definir_colisoes(comp, true)
 	
 	comp.jogador = novo_player
 	comp.velocity = Vector2.ZERO
@@ -458,12 +458,10 @@ func _definir_ativa(fase: Node, ativa: bool) -> void:
 	fase.process_mode = Node.PROCESS_MODE_INHERIT if ativa else Node.PROCESS_MODE_DISABLED
 
 	# Fases em cache continuam na árvore, então precisamos desligar
-	# explicitamente suas colisões quando estão inativas.
-	for shape: CollisionShape2D in fase.find_children("*", "CollisionShape2D", true, false):
-		shape.set_deferred("disabled", not ativa)
-
-	for polygon: CollisionPolygon2D in fase.find_children("*", "CollisionPolygon2D", true, false):
-		polygon.set_deferred("disabled", not ativa)
+	# explicitamente suas colisões quando estão inativas — INCLUINDO as dos
+	# TileMapLayer (paredes), que ficavam ligadas e viravam obstáculos
+	# invisíveis dentro da fase ativa.
+	_definir_colisoes(fase, ativa)
 
 	if ativa:
 		var cameras := fase.find_children("*", "Camera2D", true, false)
@@ -482,6 +480,44 @@ func _definir_ativa(fase: Node, ativa: bool) -> void:
 		fase.ao_entrar_na_fase()
 	elif not ativa and fase.has_method("ao_sair_da_fase"):
 		fase.ao_sair_da_fase()
+
+
+# ════════════════════════════════════════════════════════════════════════════
+#  COLISÕES DAS FASES EM CACHE
+# ════════════════════════════════════════════════════════════════════════════
+
+## Liga/desliga TODAS as colisões (e a navegação dos TileMapLayer) de `raiz`,
+## lembrando o valor original de cada propriedade pra restaurá-lo depois.
+## Assim, coisas que o editor deixou desligadas de propósito (ex.: a camada
+## "Chao", com collision_enabled = false) continuam desligadas.
+func _definir_colisoes(raiz: Node, ativa: bool) -> void:
+	for no: Node in raiz.find_children("*", "CollisionShape2D", true, false):
+		_alternar_propriedade(no, &"disabled", true, ativa)
+
+	for no: Node in raiz.find_children("*", "CollisionPolygon2D", true, false):
+		_alternar_propriedade(no, &"disabled", true, ativa)
+
+	for no: Node in raiz.find_children("*", "TileMapLayer", true, false):
+		_alternar_propriedade(no, &"collision_enabled", false, ativa)
+		_alternar_propriedade(no, &"navigation_enabled", false, ativa)
+
+
+## `valor_desligado` é o valor que "desliga" a propriedade
+## (true para `disabled`, false para `collision_enabled`).
+func _alternar_propriedade(no: Node, prop: StringName, valor_desligado: bool, ativa: bool) -> void:
+	var chave := "_orig_%s" % prop
+
+	if ativa:
+		if no.has_meta(chave):
+			no.set_deferred(prop, no.get_meta(chave))
+			no.remove_meta(chave)
+		return
+
+	# Só guarda o original na PRIMEIRA vez que desliga (evita gravar o "false"
+	# de uma desativação anterior por cima do valor verdadeiro).
+	if not no.has_meta(chave):
+		no.set_meta(chave, no.get(prop))
+	no.set_deferred(prop, valor_desligado)
 
 
 # ════════════════════════════════════════════════════════════════════════════

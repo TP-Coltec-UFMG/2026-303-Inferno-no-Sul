@@ -117,3 +117,13 @@ func consumir_pedra() -> bool:
 func adicionar_pedra(quantidade: int = 1) -> void:
 	pedras_disponiveis = mini(pedras_disponiveis + quantidade, MAX_PEDRAS)
 	pedras_atualizadas.emit(pedras_disponiveis)
+
+
+## Limpa todo o estado de sessão (registro de NPCs e pedras). Mesmo motivo
+## do SaveManager.nova_sessao(): autoload sobrevive a change_scene_to_file,
+## então sem isso um "Novo Jogo" herdava NPCs marcados como sacrificados e
+## contagem de pedras da partida anterior.
+func nova_sessao() -> void:
+	_registro.clear()
+	pedras_disponiveis = MAX_PEDRAS
+	pedras_atualizadas.emit(pedras_disponiveis)

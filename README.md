@@ -58,12 +58,6 @@ Inferno no Sul é um jogo 2D de exploração, terror e sobrevivência. Entre as 
 </p>
 
 
-### Furtividade e perseguição
-
-O jogador deve controlar a forma como se movimenta pelo cenário. Correr permite escapar mais rapidamente, porém consome stamina e produz mais ruído. Agachar-se reduz a velocidade, mas também diminui o som produzido.
-
-Os inimigos podem investigar sons, procurar o jogador após detectá-lo e iniciar perseguições. Dessa forma, o jogador deve decidir quando correr, quando se esconder e quando utilizar distrações.
-
 ### Sistema de companheiro
 
 Durante parte da campanha, o jogador é acompanhado por um NPC que pode auxiliá-lo na exploração.

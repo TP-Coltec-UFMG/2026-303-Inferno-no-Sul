@@ -2,7 +2,7 @@ extends CharacterBody2D
 class_name MC
 
 const aceleracao        = 1500.0
-const velocidade_maxima = 350.0
+const velocidade_maxima = 650.0
 const atrito            = 1200.0
 
 # ── Corrida ──────────────────────────────────────────────────────────────────
@@ -11,7 +11,9 @@ const STAMINA_MAXIMA       : float = 100.0
 const STAMINA_CONSUMO      : float = 20.0   # por segundo correndo
 const STAMINA_REGEN        : float = 12.0   # por segundo parado/andando
 const STAMINA_MIN_CORRIDA  : float = 10.0   # mínimo para iniciar sprint
+const INTERVALO_VERIFICACAO_SOM := 0.1  
 
+var _tempo_desde_ultima_verificacao := 0.0
 var stamina       : float = STAMINA_MAXIMA
 var esta_correndo : bool  = false
 
@@ -119,6 +121,63 @@ func _unhandled_input(event: InputEvent) -> void:
 		if inv:
 			inv.alternar()
 		get_viewport().set_input_as_handled()
+		return
+
+	_processar_comandos_companheiro(event)
+
+
+# ════════════════════════════════════════════════════════════════════════════
+#  COMANDOS DO COMPANHEIRO
+# ════════════════════════════════════════════════════════════════════════════
+
+func _processar_comandos_companheiro(event: InputEvent) -> void:
+	if companheiro == null:
+		return
+
+	if event.is_action_pressed("cmd_arremesso"):
+		ordenar_skill("arremesso", _achar_alvo_arremessavel())
+		get_viewport().set_input_as_handled()
+
+	elif event.is_action_pressed("cmd_lockpicking"):
+		ordenar_skill("lockpicking", _achar_porta_trancada())
+		get_viewport().set_input_as_handled()
+
+	elif event.is_action_pressed("cmd_distracao"):
+		ordenar_skill("distracao")
+		get_viewport().set_input_as_handled()
+
+	elif _acao_pressionada(event, "cmd_atirar_pedra"):
+		if companheiro is Doidinho:
+			(companheiro as Doidinho).atirar_pedra()
+		get_viewport().set_input_as_handled()
+
+	elif event.is_action_pressed("cmd_sacrificio"):
+		sacrificar_companheiro()
+		get_viewport().set_input_as_handled()
+
+
+func _achar_alvo_arremessavel(raio: float = 128.0) -> Node:
+	if companheiro == null:
+		return null
+	var origem := companheiro.global_position
+	for node: Node in get_tree().get_nodes_in_group("arremessavel"):
+		if (node as Node2D).global_position.distance_to(origem) <= raio:
+			return node
+	return null
+
+
+func _achar_porta_trancada(raio: float = 80.0) -> Node:
+	if companheiro == null:
+		return null
+	var origem := companheiro.global_position
+	for node: Node in get_tree().get_nodes_in_group("porta_trancada"):
+		if (node as Node2D).global_position.distance_to(origem) <= raio:
+			return node
+	return null
+
+
+func _acao_pressionada(event: InputEvent, acao: StringName) -> bool:
+	return InputMap.has_action(acao) and event.is_action_pressed(acao)
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -175,9 +234,12 @@ func _redimensionar_colisao(agachado: bool) -> void:
 
 func _processar_som(direcao: Vector2, delta: float) -> void:
 	var nivel_alvo := _calcular_nivel_som(direcao)
-
-	# Suaviza variações bruscas de nível de som
 	_nivel_som_acumulado = lerpf(_nivel_som_acumulado, nivel_alvo, 4.0 * delta)
+
+	_tempo_desde_ultima_verificacao += delta
+	if _tempo_desde_ultima_verificacao < INTERVALO_VERIFICACAO_SOM:
+		return
+	_tempo_desde_ultima_verificacao = 0.0
 
 	if _nivel_som_acumulado > 5.0:
 		get_tree().call_group("inimigos", "ouvir_barulho", global_position, _nivel_som_acumulado)
@@ -191,6 +253,7 @@ func _calcular_nivel_som(direcao: Vector2) -> float:
 	if esta_agachado:
 		return SOM_AGACHADO
 	return SOM_ANDANDO
+
 
 
 # ════════════════════════════════════════════════════════════════════════════

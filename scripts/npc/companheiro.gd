@@ -10,8 +10,20 @@ enum Estado { OCIOSO, SEGUINDO, EXECUTANDO_SKILL, ISCA, MORTO }
 
 @export_group("Movimento")
 @export var velocidade       : float = 120.0
-@export var distancia_seguir : float = 60.0
+## Distância em que o companheiro para de andar. Precisa ser maior que a
+## soma dos raios de colisão do companheiro + jogador, senão os dois ficam
+## fisicamente sobrepostos mesmo "parados", travando ações do jogador
+## (colisão empurrando um no outro).
+@export var distancia_seguir : float = 90.0
 @export var distancia_maxima : float = 400.0
+@export var acelerecao : float = 20.0
+
+## Distância mínima que o jogador precisa se afastar para o companheiro
+## COMEÇAR a persegui-lo. Enquanto a distância estiver abaixo disso, ele
+## fica parado (mesmo em Estado.SEGUINDO) — evita que ele fique "colado"
+## reagindo a cada micro-movimento do jogador. Precisa ser maior que
+## `distancia_seguir` para não ficar oscilando entre andar/parar.
+@export var distancia_ativacao : float = 220.0
 
 # ─── Skills disponíveis (sempre usáveis, sem limiar) ─────────────────────────
 
@@ -32,6 +44,9 @@ var jogador : Node2D = null
 var _skill_ativa     : String = ""
 var _skill_alvo      : Node   = null
 var _skill_concluida : bool   = false
+
+## Controla a histerese de ativação da perseguição (ver distancia_ativacao).
+var _perseguindo_ativo : bool = false
 
 
 func _ready() -> void:
@@ -98,20 +113,72 @@ func pode_sacrificar() -> bool:
 #  ESTADOS
 # ════════════════════════════════════════════════════════════════════════════
 
-func _estado_seguindo(_delta: float) -> void:
+func _estado_seguindo(delta: float) -> void:
 	if jogador == null:
 		return
+		
 	var dist := global_position.distance_to(jogador.global_position)
-	if dist > distancia_maxima:
-		global_position = jogador.global_position + Vector2(distancia_seguir, 0.0)
-		return
-	if dist <= distancia_seguir:
-		velocity = velocity.move_toward(Vector2.ZERO, 600.0 * get_physics_process_delta_time())
+
+	# ─── Zona de conforto pessoal (sempre ativa) ────────────────────────────
+	# Sempre que estiver mais perto do jogador do que distancia_seguir, o
+	# Doidinho se afasta — independente de já estar "perseguindo" ou não.
+	# Antes essa checagem só rodava depois que a perseguição era ativada,
+	# então se ele nascesse perto do jogador (ex: início do dormitório) e o
+	# jogador não se afastasse o suficiente pra disparar a perseguição, ele
+	# ficava parado exatamente onde nasceu — colado, sem nunca se afastar.
+	# Agora a distância mínima vale sempre, não só durante perseguição ativa.
+	if dist < distancia_seguir:
+		_perseguindo_ativo = false
+		if dist > 0.001:
+			var afastar := (global_position - jogador.global_position).normalized()
+			# Quanto mais perto (sobrepondo de verdade), mais rápido se afasta;
+			# perto do limite, o movimento é bem suave.
+			var urgencia := clampf(1.0 - (dist / distancia_seguir), 0.0, 1.0)
+			var velocidade_alvo := afastar * velocidade * lerpf(0.15, 0.8, urgencia)
+			velocity = velocity.move_toward(velocidade_alvo, 800.0 * delta)
+		else:
+			velocity = velocity.move_toward(Vector2.ZERO, 600.0 * delta)
 		move_and_slide()
 		return
-	agente_navegacao.target_position = jogador.global_position
-	var dir := (agente_navegacao.get_next_path_position() - global_position).normalized()
-	velocity = dir * velocidade
+
+	# ─── Histerese de ativação ─────────────────────────────────────────────
+	# Só passa a perseguir de fato quando o jogador se afasta além de
+	# distancia_ativacao; enquanto isso não acontecer (mas já estando fora
+	# da zona de conforto acima), fica parado — evita ficar oscilando
+	# andando/parando toda hora perto do jogador.
+	if not _perseguindo_ativo:
+		if dist > distancia_ativacao:
+			_perseguindo_ativo = true
+		else:
+			velocity = velocity.move_toward(Vector2.ZERO, 600.0 * delta)
+			move_and_slide()
+			return
+
+	# ─────────────────────────────────────────────────────────────────────
+	# NOTA: nenhuma das fases do jogo possui um NavigationRegion2D (navmesh)
+	# criado, então o NavigationAgent2D nunca consegue calcular uma rota de
+	# verdade — get_next_path_position()/is_navigation_finished() ficam com
+	# retorno inconsistente, e é isso que causava o "teleporte". Enquanto
+	# não houver navmesh nas cenas, perseguimos o jogador diretamente
+	# (linha reta) usando física normal. Como o Doidinho é um
+	# CharacterBody2D com a mesma collision_layer/mask das paredes da
+	# TileMap, o move_and_slide() abaixo já impede que ele atravesse
+	# paredes e o mantém dentro da área jogável — sem precisar de navmesh.
+	# Se um NavigationRegion2D for adicionado nas fases no futuro, dá pra
+	# voltar a usar agente_navegacao.get_next_path_position() aqui.
+	# ─────────────────────────────────────────────────────────────────────
+	var dir := (jogador.global_position - global_position).normalized()
+
+	# Se o jogador estiver muito longe, dá um bônus de velocidade em vez de teleportar
+	var velocidade_atual = velocidade
+	if dist > distancia_maxima:
+		velocidade_atual = velocidade * 1.8 
+
+	# Em vez de aplicar a velocidade instantaneamente (velocity = dir * velocidade),
+	# usamos move_toward com delta para uma aceleração fluida e sem travamentos
+	var velocidade_alvo = dir * velocidade_atual
+	velocity = velocity.move_toward(velocidade_alvo, 800.0 * delta)
+	
 	move_and_slide()
 
 

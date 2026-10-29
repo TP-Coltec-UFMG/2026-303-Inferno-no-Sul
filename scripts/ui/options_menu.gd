@@ -4,7 +4,6 @@ signal menu_closed
 
 # ─── Referências de UI ───────────────────────────────────────────────────────
 
-@onready var tab_container: TabContainer = %TabContainer
 @onready var btn_apply: Button = %BtnApply
 @onready var btn_back:  Button = %BtnBack
 @onready var btn_close: Button = %BtnClose
@@ -17,9 +16,17 @@ signal menu_closed
 @onready var option_resolution: OptionButton = %BtnResolution
 
 @onready var slider_mouse_sensitivity: HSlider = %SliderMouseSensitivity
-@onready var container_bindings: VBoxContainer = %ContainerBindings
 
 @onready var slider_font_size: HSlider = %SliderFontSize
+@onready var slider_scale_factor: HSlider = %SliderScaleFactor
+
+@onready var btn_keys: Button = %BtnKeys
+
+# ─── Cena do menu de remapeamento de teclas ─────────────────────────────────
+const KEYMAP_MENU_SCENE := preload("res://scenes/ui/keymap_menu.tscn")
+var _keymap_instance: Control = null
+
+
 
 # ─── Dados ───────────────────────────────────────────────────────────────────
 
@@ -31,21 +38,16 @@ const RESOLUTIONS := [
 	Vector2i(3840, 2160),
 ]
 
-const REMAPPABLE_ACTIONS := [
-	"move_left", "move_right", "move_up", "move_down",
-	"jump", "attack", "interact", "pause",
-	"correr", "agachar",
-]
-
-
 # ════════════════════════════════════════════════════════════════════════════
 #  CICLO DE VIDA
 # ════════════════════════════════════════════════════════════════════════════
 
 func _ready() -> void:
 	_populate_resolutions()
+	slider_font_size.min_value = FontManager.MIN_FONT_SIZE
+	slider_font_size.max_value = FontManager.MAX_FONT_SIZE
+	slider_font_size.step = 1
 	_load_settings()
-	_build_rebind_list()
 	_connect_signals()
 	set_process_unhandled_input(true)
 
@@ -69,36 +71,6 @@ func _populate_resolutions() -> void:
 		option_resolution.add_item("%d × %d" % [res.x, res.y])
 
 
-func _build_rebind_list() -> void:
-	for child in container_bindings.get_children():
-		child.queue_free()
-
-	for action in REMAPPABLE_ACTIONS:
-		var row := HBoxContainer.new()
-
-		var label := Label.new()
-		label.text = action.replace("_", " ").capitalize()
-		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_child(label)
-
-		var btn := Button.new()
-		btn.text = _get_action_key_label(action)
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn.pressed.connect(_start_rebind.bind(action, btn))
-		row.add_child(btn)
-
-		container_bindings.add_child(row)
-
-
-func _get_action_key_label(action: String) -> String:
-	for event in InputMap.action_get_events(action):
-		if event is InputEventKey:
-			return OS.get_keycode_string(event.physical_keycode)
-		if event is InputEventJoypadButton:
-			return "Btn %d" % event.button_index
-		if event is InputEventMouseButton:
-			return "Mouse %d" % event.button_index
-	return "---"
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -119,10 +91,15 @@ func _load_settings() -> void:
 
 	slider_mouse_sensitivity.value = SettingsManager.get_setting("controls.mouse_sensitivity")
 
-	slider_font_size.value = SettingsManager.get_setting("accessibility.font_size")
+	slider_scale_factor.value = float(SettingsManager.get_setting("video.scale_factor"))
 
+	var saved_font_size := int(SettingsManager.get_setting("accessibility.font_size"))
+	slider_font_size.value = clampi(
+		saved_font_size if saved_font_size > 0 else FontManager.DEFAULT_FONT_SIZE,
+		FontManager.MIN_FONT_SIZE,
+		FontManager.MAX_FONT_SIZE
+	)
 	_apply_all()
-
 
 func _save_settings() -> void:
 	SettingsManager.set_setting("audio.master", slider_master.value)
@@ -133,6 +110,8 @@ func _save_settings() -> void:
 	var res: Vector2i = RESOLUTIONS[option_resolution.selected]
 	SettingsManager.set_setting("video.resolution_x", res.x)
 	SettingsManager.set_setting("video.resolution_y", res.y)
+
+	SettingsManager.set_setting("video.scale_factor", slider_scale_factor.value)
 
 	SettingsManager.set_setting("controls.mouse_sensitivity", slider_mouse_sensitivity.value)
 
@@ -159,76 +138,26 @@ func _apply_audio() -> void:
 
 func _apply_video() -> void:
 	var res: Vector2i = RESOLUTIONS[option_resolution.selected]
-	DisplayServer.window_set_size(res)
+	var fullscreen := check_fullscreen.button_pressed
 
-	if check_fullscreen.button_pressed:
+	if fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(res)
+		var screen_size: Vector2i = DisplayServer.screen_get_size()
+		var win_pos := Vector2i(int((screen_size.x - res.x) / 2.0), int((screen_size.y - res.y) / 2.0))
+		DisplayServer.window_set_position(win_pos)
 
 
 func _apply_accessibility() -> void:
-	var root_theme := ThemeDB.get_project_theme()
-	if root_theme:
-		root_theme.default_font_size = int(slider_font_size.value)
+	FontManager.definir_tamanho(int(slider_font_size.value))
 
 
 func _set_bus_volume(bus_name: String, db_value: float) -> void:
 	var idx := AudioServer.get_bus_index(bus_name)
 	if idx != -1:
 		AudioServer.set_bus_volume_db(idx, db_value)
-
-
-# ════════════════════════════════════════════════════════════════════════════
-#  REBIND DE TECLAS
-# ════════════════════════════════════════════════════════════════════════════
-
-var _rebinding_action := ""
-var _rebinding_button: Button = null
-var _rebind_locked := false
-
-
-func _start_rebind(action: String, btn: Button) -> void:
-	_rebinding_action = action
-	_rebinding_button = btn
-	btn.text = "[ Pressione uma tecla... ]"
-	set_process_unhandled_input(false)
-	_rebind_locked = true
-	await get_tree().create_timer(0.2).timeout
-	_rebind_locked = false
-	set_process_input(true)
-
-
-func _input(event: InputEvent) -> void:
-	if _rebinding_action.is_empty():
-		return
-	if _rebind_locked:
-		return
-	if not (event is InputEventKey or event is InputEventJoypadButton or event is InputEventMouseButton):
-		return
-	if event is InputEventKey or event is InputEventMouseButton:
-		if not event.pressed:
-			return
-		get_viewport().set_input_as_handled()
-	if event is InputEventKey and event.keycode == KEY_ESCAPE:
-		_cancel_rebind()
-		return
-
-	InputManager.definir_evento(_rebinding_action, event)
-	_rebinding_button.text = _get_action_key_label(_rebinding_action)
-	_rebinding_action = ""
-	_rebinding_button = null
-	set_process_input(false)
-	set_process_unhandled_input(true)
-
-
-func _cancel_rebind() -> void:
-	if _rebinding_button:
-		_rebinding_button.text = _get_action_key_label(_rebinding_action)
-	_rebinding_action = ""
-	_rebinding_button = null
-	set_process_input(false)
-	set_process_unhandled_input(true)
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -239,7 +168,35 @@ func _connect_signals() -> void:
 	btn_apply.pressed.connect(_on_apply_pressed)
 	btn_back.pressed.connect(_on_back_pressed)
 	btn_close.pressed.connect(_on_back_pressed)
+	btn_keys.pressed.connect(_on_keys_pressed)
 	check_fullscreen.toggled.connect(_on_fullscreen_toggled)
+	slider_font_size.value_changed.connect(_on_slider_font_size_changed)
+
+
+## Reage em tempo real ao arrastar o slider (preview), sem salvar ainda.
+## O valor só é persistido quando o usuário aperta "Aplicar".
+func _on_slider_font_size_changed(value: float) -> void:
+	FontManager.definir_tamanho(int(value))
+
+## Abre a cena de remapeamento de teclas por cima do menu de opções.
+func _on_keys_pressed() -> void:
+	if _keymap_instance:
+		return
+
+	_keymap_instance = KEYMAP_MENU_SCENE.instantiate()
+	get_parent().add_child(_keymap_instance)
+	_keymap_instance.menu_closed.connect(_on_keymap_menu_closed)
+
+	# Esconde o menu de opções enquanto o de teclas está aberto
+	visible = false
+
+
+## Chamado quando o menu de teclas é fechado (botão Voltar/X ou ESC).
+func _on_keymap_menu_closed() -> void:
+	visible = true
+	if is_instance_valid(_keymap_instance):
+		_keymap_instance.queue_free()
+	_keymap_instance = null
 
 
 func _on_apply_pressed() -> void:
@@ -259,7 +216,13 @@ func _on_back_pressed() -> void:
 
 
 func _on_fullscreen_toggled(pressed: bool) -> void:
+	var res: Vector2i = RESOLUTIONS[option_resolution.selected]
+
 	if pressed:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(res)
+		var screen_size: Vector2i = DisplayServer.screen_get_size()
+		var win_pos := Vector2i(int((screen_size.x - res.x) / 2.0), int((screen_size.y - res.y) / 2.0))
+		DisplayServer.window_set_position(win_pos)

@@ -18,6 +18,8 @@ const ACOES: Array[String] = [
 	"move_left", "move_right", "move_up", "move_down",
 	"jump", "attack", "interact", "pause",
 	"correr", "agachar",
+	"cmd_arremesso", "cmd_lockpicking", "cmd_distracao",
+	"cmd_atirar_pedra", "cmd_sacrificio",
 ]
 
 
